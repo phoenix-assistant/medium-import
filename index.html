@@ -1,0 +1,163 @@
+<html><head><meta charset="utf-8"><title>I Mass-Deployed an AI Coding Agent. Then the Model Updated and Nobody Told Me.</title></head><body><h1>I Mass-Deployed an AI Coding Agent. Then the Model Updated and Nobody Told Me.</h1>
+<p>Last month, I woke up to a Slack message from our most senior
+engineer: “Did something change? The agent is rewriting entire files
+again.”</p>
+<p>I checked the logs. Same prompts. Same codebase. Same agent config.
+But the model underneath had silently updated — and our carefully-tuned
+workflows broke in ways no benchmark would ever catch.</p>
+<p>Our CI failure rate doubled in three days. Nobody connected it to the
+model update because there was no announcement, no changelog, no version
+bump. Just… different behavior.</p>
+<p>I’m not alone. AMD’s AI Director just published data from 7,000
+Claude Code sessions that tells the same story — at enterprise
+scale.</p>
+<h2 id="the-data-that-made-me-rethink-everything">The Data That Made Me
+Rethink Everything</h2>
+<p>AMD tracked what happened across 14 model releases in a single
+month:</p>
+<ul>
+<li><strong>Code reading dropped 3x.</strong> The agent stopped reading
+context before editing. It got lazier — fewer files read, more
+assumptions made.</li>
+<li><strong>Full file rewrites increased 2x.</strong> Surgical function
+edits became scorched-earth file replacements. More churn, more review
+burden, more risk.</li>
+<li><strong>5 production outages</strong> traced to agent-generated code
+that passed CI but introduced subtle behavioral regressions.</li>
+</ul>
+<p>This wasn’t a capability problem. The model was still “smart.” It was
+a <em>consistency</em> problem — and I realized I’d been ignoring it in
+my own setup too.</p>
+<h2 id="i-call-it-the-silent-regression-tax">I Call It the Silent
+Regression Tax</h2>
+<p>Here’s the pattern I keep seeing:</p>
+<p><strong>Your AI coding agent works great.</strong> You tune your
+prompts, build muscle memory around its patterns, trust it with
+increasingly complex tasks.</p>
+<p><strong>The vendor updates the model.</strong> No opt-in. No staging
+environment. No behavioral changelog. Just a new version behind the same
+API endpoint.</p>
+<p><strong>Your workflows quietly degrade.</strong> Not catastrophically
+— that would be easy to catch. Subtly. The agent starts generating
+slightly more verbose code. Reviews take slightly longer. CI flakes
+increase slightly. Each change is below the threshold of anyone
+noticing.</p>
+<p><strong>Three weeks later, someone asks: “Why does everything feel
+slower?”</strong></p>
+<p>That’s the Silent Regression Tax. You’re paying it right now and you
+don’t know the amount.</p>
+<h2 id="why-benchmarks-cant-catch-this">Why Benchmarks Can’t Catch
+This</h2>
+<p>Standard benchmarks answer: “Can this model solve problem X?”</p>
+<p>They don’t answer: “Will this model solve problem X <strong>the same
+way</strong> it did last week?”</p>
+<p>For teams that depend on consistency, this is the wrong question
+entirely. Here’s the difference:</p>
+<pre><code>❌ What benchmarks test:
+   &quot;Given this function, write a unit test&quot; → Pass/Fail
+
+✅ What you actually need to test:
+   &quot;Given this function, does the agent still:
+    - Read 3 related files before editing?
+    - Make surgical edits vs full rewrites?
+    - Follow our naming conventions?
+    - Produce code that LOOKS like our codebase?&quot;</code></pre>
+<p>AMD’s 3x reading drop would never show up on a benchmark. The agent
+still “solved” the task. It just solved it like a stranger to the
+codebase instead of a team member.</p>
+<h2 id="the-behavioral-baseline-a-framework-that-actually-works">The
+Behavioral Baseline — A Framework That Actually Works</h2>
+<p>After getting burned, I built what I call a <strong>Behavioral
+Baseline</strong> — a regression suite that tests <em>how</em> the agent
+works, not just <em>whether</em> it works.</p>
+<p>Here’s the template. Steal it.</p>
+<h3 id="behavioral-baseline-config-copy-paste-this">Behavioral Baseline
+Config (copy-paste this)</h3>
+<pre class="yaml"><code># behavioral-baseline.yaml
+# Run this against every model version before deploying to your team
+
+baseline_tests:
+  context_reading:
+    description: &quot;Does the agent read related files before editing?&quot;
+    task: &quot;Add error handling to auth.py&quot;
+    expected_files_read: [&quot;auth.py&quot;, &quot;models/user.py&quot;, &quot;middleware/auth.py&quot;]
+    min_files_read: 2
+    
+  edit_granularity:
+    description: &quot;Does the agent make surgical edits or rewrite files?&quot;
+    task: &quot;Fix the null check in parse_config()&quot;
+    max_lines_changed: 15  # If it rewrites 200 lines, flag it
+    
+  style_consistency:
+    description: &quot;Does output match your codebase conventions?&quot;
+    task: &quot;Add a new API endpoint for /users/search&quot;
+    checks:
+      - uses_project_error_handler: true
+      - follows_naming_convention: true
+      - includes_docstring: true
+      
+  reasoning_stability:
+    description: &quot;Same task, same approach?&quot;
+    task: &quot;Refactor the retry logic in api_client.py&quot;
+    run_count: 3
+    max_approach_variance: 1  # Should pick same strategy each time
+
+thresholds:
+  context_score: 0.8    # 80% of expected files read
+  granularity_score: 0.7 # 70% of edits should be surgical
+  style_score: 0.9       # 90% convention compliance
+  stability_score: 0.8   # 80% consistency across runs
+
+alert:
+  on_regression: true
+  channel: &quot;#engineering&quot;
+  block_rollout_below: 0.6</code></pre>
+<h3 id="how-to-use-it">How to use it:</h3>
+<ol type="1">
+<li><strong>Record your baseline</strong> on the current model version
+(the one that works)</li>
+<li><strong>Run the suite</strong> against every new version before
+deploying</li>
+<li><strong>Compare scores</strong> — any category dropping &gt; 15% is
+a rollback trigger</li>
+<li><strong>Track over time</strong> — plot your behavioral scores
+across model versions</li>
+</ol>
+<p>I run this weekly now. It takes 20 minutes and has caught two
+regressions that would have cost days.</p>
+<h2 id="when-this-does-not-apply">When This Does NOT Apply</h2>
+<p>Be honest about the limits:</p>
+<ul>
+<li><strong>Solo devs / hobby projects</strong> — the overhead isn’t
+worth it. Just pin your model version and move on.</li>
+<li><strong>Teams using AI for first drafts only</strong> — if humans
+rewrite 80%+ of agent output anyway, behavioral drift matters less.</li>
+<li><strong>One-off generation tasks</strong> — if you’re not building
+ongoing workflows, consistency doesn’t matter.</li>
+</ul>
+<p>This matters when you have a <strong>team</strong> depending on an
+agent behaving predictably across <strong>weeks and months</strong>. If
+you’re there, you can’t afford to skip this.</p>
+<h2 id="the-bigger-picture">The Bigger Picture</h2>
+<p>We’re treating AI model updates like app updates — install and
+forget. We should be treating them like database migrations — test,
+stage, monitor, rollback.</p>
+<p>AMD’s data is a gift to the industry. It quantifies what teams feel
+but can’t prove: AI coding agents get better on average while getting
+worse for specific teams on specific updates.</p>
+<p>The vendors won’t fix this. Their incentive is shipping capabilities,
+not maintaining behavioral contracts. Which means it’s on us — the teams
+actually deploying these tools — to build the instrumentation layer
+ourselves.</p>
+<p>I’m building an open-source behavioral regression detector. First
+version tracks edit granularity and context reading across model
+versions. It’s rough but it works. Link in comments if you want to try
+it.</p>
+<hr />
+<p><em>The teams that win won’t use the most powerful models. They’ll be
+the ones who know — within hours — when their tools silently
+changed.</em></p>
+<hr />
+<p><strong>Tags:</strong> AI Engineering, LLMOps, Developer Tools,
+Software Quality, Model Regression</p>
+</body></html>
