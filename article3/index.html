@@ -1,6 +1,4 @@
 <html><head><meta charset="utf-8"><title>The 80% Automation Playbook — How to Build a CLI Pipeline That Writes Your PRs</title></head><body><h1>The 80% Automation Playbook — How to Build a CLI Pipeline That Writes Your PRs</h1>
-<p><strong>Subtitle:</strong> I automated the boring 80% of my job in a weekend. The other 20% got harder.</p>
-<p><strong>Tags:</strong> AI, Developer Productivity, Automation, Claude, Software Engineering</p>
 <p>I didn't plan to automate my job. I was just tired of triaging Jira tickets at 9am on a Monday.</p>
 <p>It started with a script that pulled issues from our GitLab API. By Friday, that script was classifying tickets, spinning up branches, writing code, and opening PRs — all without me touching my keyboard. I went from 6 PRs a week to 30+. And then everything broke in a way I didn't expect.</p>
 <h2>The Problem Nobody Warns You About</h2>
@@ -10,10 +8,12 @@
 <h2>The Ticket Triage Matrix</h2>
 <p>I call it the <strong>Ticket Triage Matrix</strong> — a classifier that runs before any automation touches your codebase. It's not about whether a ticket <em>looks</em> simple. It's about whether it <em>stays</em> simple.</p>
 <p>The matrix scores every ticket on four dimensions:</p>
-<p>1. <strong>Blast radius</strong> — How many files/components does this touch? (1 file = safe, 5+ = manual)</p>
-<p>2. <strong>Test coverage</strong> — Does the affected code have tests? (>80% = safe, <50% = manual)</p>
-<p>3. <strong>Dependency depth</strong> — Is this a leaf node or does it sit in a call chain? (leaf = safe, hub = manual)</p>
-<p>4. <strong>Historical volatility</strong> — Has this file caused rollbacks before? (stable = safe, hot = manual)</p>
+<ol>
+<li><strong>Blast radius</strong> — How many files/components does this touch? (1 file = safe, 5+ = manual)</li>
+<li><strong>Test coverage</strong> — Does the affected code have tests? (>80% = safe, <50% = manual)</li>
+<li><strong>Dependency depth</strong> — Is this a leaf node or does it sit in a call chain? (leaf = safe, hub = manual)</li>
+<li><strong>Historical volatility</strong> — Has this file caused rollbacks before? (stable = safe, hot = manual)</li>
+</ol>
 <p>Score 4/4? Automate it. Score 2/4? Human reviews the PR before merge. Score 0-1? Don't even try.</p>
 <h2>What This Looks Like: Bad vs Good</h2>
 <p><strong>Bad — "just automate everything":</strong></p>
