@@ -10,7 +10,7 @@ a draft fix. The fix was wrong — off by one table join — but the
 diagnosis was dead on. I spent 9 minutes instead of 45.</p>
 <p>That’s when it clicked: we crossed a line. Coding agents aren’t
 interactive tools anymore. They’re infrastructure.</p>
-<h2 id="the-problem-were-still-treating-agents-like-repls">The Problem:
+<h2>The Problem:
 We’re Still Treating Agents Like REPLs</h2>
 <p>Most teams using AI coding assistants are stuck in what I call
 <strong>REPL mode</strong>. You open a terminal. You type a prompt. You
@@ -24,7 +24,7 @@ API-triggered, and GitHub-event-driven agent runs on cloud
 infrastructure. 630 points on Hacker News. 4,097 reactions on LinkedIn.
 The signal is loud because the shift is real.</p>
 <p>But the feature isn’t the story. The pattern is.</p>
-<h2 id="the-tap-framework-three-modes-of-agent-autonomy">The TAP
+<h2>The TAP
 Framework: Three Modes of Agent Autonomy</h2>
 <p>I’ve been thinking about this as <strong>TAP</strong> — the three
 stages every team goes through with coding agents:</p>
@@ -41,7 +41,7 @@ review checklist. An alert fires and it opens a draft fix. A library
 merges a change and the agent ports it to your other SDK.</p>
 <p>Most teams think they’re innovative at T. The real leverage is at A
 and P.</p>
-<h2 id="what-this-looked-like-before-vs.-after">What This Looked Like
+<h2>What This Looked Like
 Before vs. After</h2>
 <p><strong>Before (Terminal mode):</strong></p>
 <pre><code># Monday morning ritual
@@ -53,21 +53,21 @@ $ claude &quot;check staging error logs since Friday&quot;
 # ... wait 3 minutes ...
 # Repeat every Monday forever</code></pre>
 <p><strong>After (Automated + Proactive):</strong></p>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># routine: monday-morning-triage</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">trigger</span><span class="kw">:</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">schedule</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;0 6 * * MON&quot;</span><span class="co">    # 6am every Monday</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">github</span><span class="kw">:</span><span class="at"> pull_request.opened</span><span class="co">  # also on new PRs</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">prompt</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  1. Review all open PRs against REVIEW_CHECKLIST.md</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  2. Scan error logs since last run</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  3. Correlate new errors with recent commits</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  4. Post summary to #engineering Slack</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  5. Open draft PRs for any clear fixes</span></code></pre></div>
+<div class="sourceCode"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># routine: monday-morning-triage</span></span>
+<span><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">trigger</span><span class="kw">:</span></span>
+<span><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">schedule</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;0 6 * * MON&quot;</span><span class="co">    # 6am every Monday</span></span>
+<span><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">github</span><span class="kw">:</span><span class="at"> pull_request.opened</span><span class="co">  # also on new PRs</span></span>
+<span><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">prompt</span><span class="kw">: </span><span class="ch">|</span></span>
+<span><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  1. Review all open PRs against REVIEW_CHECKLIST.md</span>
+<span><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  2. Scan error logs since last run</span>
+<span><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  3. Correlate new errors with recent commits</span>
+<span><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  4. Post summary to #engineering Slack</span>
+<span><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  5. Open draft PRs for any clear fixes</span></code></pre></div>
 <p>The Monday morning ritual takes zero minutes now. It happened at 6am
 while I was asleep.</p>
-<h2 id="the-copy-paste-starter-kit">The Copy-Paste Starter Kit</h2>
+<h2>The Copy-Paste Starter Kit</h2>
 <p>Here’s the routine setup I’d start with if you’re on a team of 3-15
 engineers:</p>
 <p><strong>Routine 1: Nightly Backlog Groomer</strong> - Trigger:
@@ -87,7 +87,7 @@ go/no-go to release channel. - Time saved: ~30 min/deploy</p>
 weekly on Sundays - Prompt: Scan merged PRs this week. Find docs
 referencing changed APIs. Open update PRs for stale docs. - Time saved:
 docs actually stay current (novel concept)</p>
-<h2 id="when-not-to-use-this">When NOT to Use This</h2>
+<h2>When NOT to Use This</h2>
 <p>Routines aren’t the answer for everything. Don’t use them for:</p>
 <ul>
 <li><strong>Creative architecture decisions.</strong> Agents are great
@@ -103,7 +103,7 @@ down first. The routine is only as good as the prompt.</li>
 overhead of setting up routines outweighs the benefit if nobody else is
 in the loop.</li>
 </ul>
-<h2 id="whats-next">What’s Next</h2>
+<h2>What’s Next</h2>
 <p>We’re in the first week of this shift. Routines today are
 Claude-only, cloud-only, and limited to GitHub as the event source. But
 the pattern — agents that run autonomously on triggers — is going to
@@ -119,7 +119,7 @@ drink coffee.</p>
 <p>I’d start with one routine. The nightly backlog groomer. It takes 10
 minutes to set up and it’ll change how you think about what agents are
 for.</p>
-<hr />
+<br>
 <p><em>Building agentic developer workflows at the intersection of AI
 and engineering. More at <a
 href="https://medium.com/@phoenixai.hub">phoenixai.hub</a>.</em></p>
