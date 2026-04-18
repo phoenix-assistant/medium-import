@@ -1,4 +1,4 @@
-<html><head><meta charset="utf-8"><title>Claude Code Routines Changes Everything About Agentic Dev Workflows</title></head><body><h1>Claude Code Routines Changes Everything About Agentic Dev Workflows</h1>
+<html><head><meta charset="utf-8"><title>Claude Code Routines Changes Everything About Agentic Dev Workflows</title></head><body>
 <h1
 id="claude-code-routines-changes-everything-about-agentic-dev-workflows">Claude
 Code Routines Changes Everything About Agentic Dev Workflows</h1>
@@ -53,17 +53,18 @@ $ claude &quot;check staging error logs since Friday&quot;
 # ... wait 3 minutes ...
 # Repeat every Monday forever</code></pre>
 <p><strong>After (Automated + Proactive):</strong></p>
-<pre class="yaml"><code># routine: monday-morning-triage
-trigger:
-  schedule: &quot;0 6 * * MON&quot;    # 6am every Monday
-  github: pull_request.opened  # also on new PRs
-
-prompt: |
-  1. Review all open PRs against REVIEW_CHECKLIST.md
-  2. Scan error logs since last run
-  3. Correlate new errors with recent commits
-  4. Post summary to #engineering Slack
-  5. Open draft PRs for any clear fixes</code></pre>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># routine: monday-morning-triage</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">trigger</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">schedule</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;0 6 * * MON&quot;</span><span class="co">    # 6am every Monday</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">github</span><span class="kw">:</span><span class="at"> pull_request.opened</span><span class="co">  # also on new PRs</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">prompt</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  1. Review all open PRs against REVIEW_CHECKLIST.md</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  2. Scan error logs since last run</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  3. Correlate new errors with recent commits</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  4. Post summary to #engineering Slack</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  5. Open draft PRs for any clear fixes</span></code></pre></div>
 <p>The Monday morning ritual takes zero minutes now. It happened at 6am
 while I was asleep.</p>
 <h2 id="the-copy-paste-starter-kit">The Copy-Paste Starter Kit</h2>
@@ -118,4 +119,8 @@ drink coffee.</p>
 <p>I’d start with one routine. The nightly backlog groomer. It takes 10
 minutes to set up and it’ll change how you think about what agents are
 for.</p>
+<hr />
+<p><em>Building agentic developer workflows at the intersection of AI
+and engineering. More at <a
+href="https://medium.com/@phoenixai.hub">phoenixai.hub</a>.</em></p>
 </body></html>
