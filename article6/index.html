@@ -1,0 +1,93 @@
+<html><head><meta charset="utf-8"><title>I Watched Four Claude Code Ecosystem Repos Hit 125K Stars in One Week. Here's What They Know That We Don't.</title></head><body><h1>I Watched Four Claude Code Ecosystem Repos Hit 125K Stars in One Week. Here's What They Know That We Don't.</h1>
+<p><em>The Single-Agent Ceiling is why your AI coding setup stopped improving three months ago.</em></p>
+<p>I've been running multi-agent coding workflows for the better part of a year. Custom memory systems. Task decomposition pipelines. Structured context files. The whole stack.</p>
+<p>Last Tuesday I opened GitHub trending and felt genuinely stupid. Four repos — built in weeks, not months — had collectively passed 125,000 stars. And they solved problems I'd been working around for ages, using approaches I'd dismissed as too simple.</p>
+<p>That's the moment I realized I'd been optimizing inside a local maximum. I was making my single-agent setup 10% better when the industry had moved to a fundamentally different architecture.</p>
+<h2>The Four Repos and Why They Matter</h2>
+<p>Here's what was trending — and what each one reveals about where we're headed:</p>
+<ul>
+<li><strong>learn-claude-code</strong> (47K stars) — rebuilt the Claude Code architecture from scratch in bash. "Bash is all you need." Proves agent harnesses are simpler than we think.</li>
+<li><strong>claude-mem</strong> (44K stars) — automatic session capture for everything the agent does. Flight recorder for agentic work.</li>
+<li><strong>oh-my-claudecode</strong> (21K stars) — multi-agent orchestration. Not one agent coding — a <em>team</em> of agents coordinating.</li>
+<li><strong>compound-engineering-plugin</strong> (12K stars) — plugin system for compound engineering workflows.</li>
+</ul>
+<p>These aren't wrappers. Nobody stars wrappers at 47K. These are tools that expose how the underlying system <em>actually works</em> — then let you rebuild it your way.</p>
+<h2>I Call It the Single-Agent Ceiling</h2>
+<p>Here's the pattern I hit, and I bet you've hit it too:</p>
+<p><strong>Month 1:</strong> You set up an AI coding agent. It's incredible. 3x productivity on boilerplate.</p>
+<p><strong>Month 3:</strong> You've tuned your prompts, added context files, built custom instructions. Marginal gains are shrinking. You're squeezing the last 5% out of a single-agent loop.</p>
+<p><strong>Month 6:</strong> You're frustrated. The agent is great at isolated tasks but terrible at coordinated work. It can write a function but can't refactor across three files without losing context. You add more context, longer prompts, more files — and hit token limits.</p>
+<p>That's the Single-Agent Ceiling. Here's what's above it vs. below it:</p>
+<pre><code>❌ Below the ceiling (single-agent):
+   One agent → reads everything → tries to do everything →
+   loses context → produces mediocre output on complex tasks
+
+✅ Above the ceiling (multi-agent):
+   Scout agent → reads & maps the codebase (narrow scope)
+   Architect agent → plans the approach (different prompt, different context)
+   Coder agent → implements one piece (surgical, focused)
+   Reviewer agent → validates against conventions (fresh eyes)
+   → Each agent is excellent at ONE thing</code></pre>
+<p>The oh-my-claudecode repo proved this at scale. Teams running 3-4 specialized agents outperform teams running one "do-everything" agent — not because the models are better, but because the <em>architecture</em> is better.</p>
+<h2>The 4-Agent Starter Template</h2>
+<p>Here's the setup I migrated to after seeing the trending repos. It took a weekend to implement and immediately improved my output quality.</p>
+<h3>Copy this structure:</h3>
+<pre><code># multi-agent-setup.yaml
+# Minimum viable multi-agent coding workflow
+
+agents:
+  scout:
+    role: "Codebase reader and mapper"
+    tools: [file_read, grep, tree]
+    constraints: "NEVER write or modify files"
+    output: "context-map.md — relevant files, dependencies, patterns found"
+
+  architect:
+    role: "Solution designer"
+    input: "context-map.md from scout"
+    tools: [file_read]  # Read-only
+    constraints: "NEVER write code. Output is a plan only."
+    output: "approach.md — what to change, why, in what order"
+
+  coder:
+    role: "Implementation"
+    input: "approach.md from architect"
+    tools: [file_read, file_write, test_run]
+    constraints: "Only modify files listed in approach.md"
+    output: "Changed files + test results"
+
+  reviewer:
+    role: "Quality gate"
+    input: "Diff from coder + original context-map.md"
+    tools: [file_read, lint, test_run]
+    constraints: "NEVER modify files. Flag issues only."
+    output: "review.md — pass/fail + specific issues"
+
+flow:
+  1: scout    # 30 seconds — reads and maps
+  2: architect # 45 seconds — plans approach
+  3: coder    # 2-5 minutes — implements
+  4: reviewer  # 30 seconds — validates
+  # If reviewer fails → back to step 3 with review.md as additional context</code></pre>
+<p>The key insight: <strong>constraints matter more than capabilities.</strong> The scout that CANNOT write code produces better context maps than an all-purpose agent. The architect that CANNOT code produces cleaner plans. Limitations create focus.</p>
+<h2>What I Got Wrong Before</h2>
+<p>I was doing what most people do — giving one agent maximum permissions and maximum context, then wondering why it produced unfocused output.</p>
+<p>The learn-claude-code repo showed me something obvious in hindsight: the best agent harnesses are <strong>simple orchestrators over constrained specialists.</strong> Not complex prompts over general-purpose models.</p>
+<p>My old setup: 2,000-word system prompt, 15 tools, read/write access to everything.</p>
+<p>My new setup: 4 agents, each with a 200-word prompt and 2-3 tools.</p>
+<p>Better output. Fewer hallucinations. Easier to debug because you know <em>which</em> agent failed at <em>which</em> step.</p>
+<h2>When This Does NOT Apply</h2>
+<ul>
+<li><strong>Simple tasks</strong> — if the task takes < 5 minutes with a single agent, multi-agent adds overhead for no gain</li>
+<li><strong>Exploration/prototyping</strong> — when you don't know what you're building yet, a single conversational agent is faster</li>
+<li><strong>Teams without CI/automation</strong> — multi-agent assumes you can run the flow automatically. If everything is manual, stick with one agent.</li>
+<li><strong>Cost-sensitive environments</strong> — 4 agents = 4x the API calls. For hobby projects, the math doesn't work.</li>
+</ul>
+<p>Multi-agent is for <strong>repeated, complex workflows</strong> where quality and consistency matter more than cost per task.</p>
+<h2>What's Next</h2>
+<p>The memory problem is still unsolved. claude-mem at 44K stars proves everyone feels the pain. Every new session starts cold. Your agent doesn't remember yesterday's architectural decisions, last week's debugging session, or the style preferences you've been reinforcing for months.</p>
+<p>I built my own memory system — file-based, indexed, with typed categories. It works, but it's held together with duct tape. The ecosystem is telling us memory needs to be a first-class primitive, not a side project.</p>
+<p>That's what I'm building next. Will share when it's ready to steal.</p>
+<p><em>If you're running multi-agent workflows, I want to hear what's working. The tooling is moving faster than any one person can track.</em></p>
+<p><strong>Tags:</strong> AI Engineering, Claude Code, Multi-Agent Systems, Developer Tools, Software Architecture</p>
+</body></html>
