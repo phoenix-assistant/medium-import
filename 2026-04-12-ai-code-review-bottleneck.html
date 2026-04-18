@@ -1,132 +1,76 @@
-<html><head><meta charset="utf-8"><title>I Approved a PR in Two Minutes. Three Days Later We Rolled It Back.</title></head><body>
-<h1
-id="i-approved-a-pr-in-two-minutes.-three-days-later-we-rolled-it-back.">I
-Approved a PR in Two Minutes. Three Days Later We Rolled It Back.</h1>
-<p><em>The Opacity Tax on AI-generated code is invisible until it
-isn’t.</em></p>
-<br>
-<p>I’ll be honest — I rubber-stamped it. The PR was clean. Tests passed.
-The diff looked like something our senior engineer would write. So I
-approved it in two minutes and moved on.</p>
-<p>Three days later, a customer-facing bug slipped through. The root
-cause? A subtle interaction between two services that the AI had no way
-to understand. The code was syntactically perfect and logically wrong.
-And I’d signed off on it because it <em>looked</em> right.</p>
-<p>That’s when I realized: AI didn’t create a code quality problem. It
-created a code <em>review</em> problem. And my team’s review process was
-designed for a world where authors understand what they wrote.</p>
-<h2>The Numbers Are Worse Than
-You Think</h2>
-<p>GitHub’s 2024 Copilot report: AI-assisted developers merge PRs
-<strong>55% faster</strong>.</p>
-<p>Sounds great. But dig in — the speed increase is almost entirely in
-<em>writing</em>. Review velocity? Unchanged. So teams generate more
-PRs, faster, and route them through the same human review capacity.</p>
-<p>GitClear’s analysis of 153 million lines found AI-assisted codebases
-show: - <strong>2x code churn</strong> — code written then reverted
-shortly after - <strong>Increased duplication</strong> — AI copies
-patterns instead of abstracting - <strong>Declining
-documentation</strong> on complex changes</p>
-<p>The code is getting written faster. It’s not getting
-<em>understood</em> faster.</p>
+<html><head><meta charset="utf-8"><title>I Approved a PR in Two Minutes. Three Days Later We Rolled It Back.</title></head><body><h1>I Approved a PR in Two Minutes. Three Days Later We Rolled It Back.</h1>
+<p><em>The Opacity Tax on AI-generated code is invisible until it isn't.</em></p>
+<p>I'll be honest — I rubber-stamped it. The PR was clean. Tests passed. The diff looked like something our senior engineer would write. So I approved it in two minutes and moved on.</p>
+<p>Three days later, a customer-facing bug slipped through. The root cause? A subtle interaction between two services that the AI had no way to understand. The code was syntactically perfect and logically wrong. And I'd signed off on it because it <em>looked</em> right.</p>
+<p>That's when I realized: AI didn't create a code quality problem. It created a code <em>review</em> problem. And my team's review process was designed for a world where authors understand what they wrote.</p>
+<h2>The Numbers Are Worse Than You Think</h2>
+<p>GitHub's 2024 Copilot report: AI-assisted developers merge PRs <strong>55% faster</strong>.</p>
+<p>Sounds great. But dig in — the speed increase is almost entirely in <em>writing</em>. Review velocity? Unchanged. So teams generate more PRs, faster, and route them through the same human review capacity.</p>
+<p>GitClear's analysis of 153 million lines found AI-assisted codebases show:</p>
+<ul>
+<li><strong>2x code churn</strong> — code written then reverted shortly after</li>
+<li><strong>Increased duplication</strong> — AI copies patterns instead of abstracting</li>
+<li><strong>Declining documentation</strong> on complex changes</li>
+</ul>
+<p>The code is getting written faster. It's not getting <em>understood</em> faster.</p>
 <h2>I Call It the Opacity Tax</h2>
-<p>Here’s the mental model:</p>
-<p><strong>Traditional code review</strong> works because of an implicit
-contract: <em>the author understands what they wrote.</em> Reviewers
-check for blind spots, not comprehension. The author can explain any
-line if asked.</p>
-<p><strong>AI-assisted code review</strong> breaks this contract. The
-author iterated with a model until tests passed. The reasoning lives in
-prompt history, not in their head. Ask them “why did you use a mutex
-here instead of a channel?” and the honest answer is “because the AI
-suggested it.”</p>
-<p>The <strong>Opacity Tax</strong> is the hidden cost your team pays
-every time a reviewer has to reverse-engineer the <em>intent</em> behind
-AI-generated code — because the author can’t explain it either.</p>
-<p>Here’s what it looks like in practice:</p>
+<p>Here's the mental model:</p>
+<p><strong>Traditional code review</strong> works because of an implicit contract: <em>the author understands what they wrote.</em> Reviewers check for blind spots, not comprehension. The author can explain any line if asked.</p>
+<p><strong>AI-assisted code review</strong> breaks this contract. The author iterated with a model until tests passed. The reasoning lives in prompt history, not in their head. Ask them "why did you use a mutex here instead of a channel?" and the honest answer is "because the AI suggested it."</p>
+<p>The <strong>Opacity Tax</strong> is the hidden cost your team pays every time a reviewer has to reverse-engineer the <em>intent</em> behind AI-generated code — because the author can't explain it either.</p>
+<p>Here's what it looks like in practice:</p>
 <pre><code>❌ Traditional review (low opacity):
-   Reviewer: &quot;Why a mutex here?&quot;
-   Author: &quot;Because the shared state is only accessed in two goroutines, 
-            and a channel felt like overkill for a simple counter.&quot;
+   Reviewer: "Why a mutex here?"
+   Author: "Because the shared state is only accessed in two goroutines,
+            and a channel felt like overkill for a simple counter."
    → Reviewer trusts the reasoning. Quick approval.
 
-✅ AI-assisted review (high opacity):  
-   Reviewer: &quot;Why a mutex here?&quot;
-   Author: &quot;The AI suggested it. Tests pass.&quot;
+✅ AI-assisted review (high opacity):
+   Reviewer: "Why a mutex here?"
+   Author: "The AI suggested it. Tests pass."
    → Reviewer must now independently verify the concurrency model.
    → 3x longer review. Or worse — they skip it.</code></pre>
-<p>Most teams are choosing “skip it.” That’s how subtle bugs ship.</p>
-<h2>The 4-Field PR
-Template That Fixed This For Us</h2>
-<p>After the rollback, I mandated a new field in every PR template. It
-took 30 seconds to fill out and cut our post-merge bug rate by roughly
-40% in the first month.</p>
-<h3>Copy this into your PR
-template:</h3>
-<div class="sourceCode"><pre
-class="sourceCode markdown"><code class="sourceCode markdown"><span><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## AI Assistance Disclosure</span></span>
-<span><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>**AI tools used:** <span class="co">[</span><span class="ot">e.g., Copilot, Claude Code, Cursor — or &quot;None&quot;</span><span class="co">]</span></span>
-<span><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>**What AI generated vs what I wrote:**</span>
-<span><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Be specific. &quot;AI wrote the retry logic, I wrote the error handling&quot;</span><span class="co">]</span></span>
-<span><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>**What I&#39;m LEAST confident about:**</span>
-<span><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">The part you&#39;d want a second pair of eyes on</span><span class="co">]</span></span>
-<span><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>**Alternatives I considered (not the AI — me):**</span>
-<span><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Forces you to think independently about the approach</span><span class="co">]</span></span></code></pre></div>
+<p>Most teams are choosing "skip it." That's how subtle bugs ship.</p>
+<h2>The 4-Field PR Template That Fixed This For Us</h2>
+<p>After the rollback, I mandated a new field in every PR template. It took 30 seconds to fill out and cut our post-merge bug rate by roughly 40% in the first month.</p>
+<h3>Copy this into your PR template:</h3>
+<pre><code>## AI Assistance Disclosure
+
+**AI tools used:** [e.g., Copilot, Claude Code, Cursor — or "None"]
+
+**What AI generated vs what I wrote:**
+[Be specific. "AI wrote the retry logic, I wrote the error handling"]
+
+**What I'm LEAST confident about:**
+[The part you'd want a second pair of eyes on]
+
+**Alternatives I considered (not the AI — me):**
+[Forces you to think independently about the approach]</code></pre>
 <p>The magic is in field 3 and 4.</p>
-<p><strong>“What I’m least confident about”</strong> forces the author
-to audit their own understanding. If they can’t name a weak spot, that’s
-a red flag — they didn’t think critically about what the AI
-produced.</p>
-<p><strong>“Alternatives I considered”</strong> puts the human back in
-the decision loop. You can’t fill this out by copying AI output. You
-have to actually reason about the problem.</p>
-<h2>What Changed After We
-Adopted This</h2>
+<p><strong>"What I'm least confident about"</strong> forces the author to audit their own understanding. If they can't name a weak spot, that's a red flag — they didn't think critically about what the AI produced.</p>
+<p><strong>"Alternatives I considered"</strong> puts the human back in the decision loop. You can't fill this out by copying AI output. You have to actually reason about the problem.</p>
+<h2>What Changed After We Adopted This</h2>
 <ul>
-<li><strong>Review time went up 15%.</strong> That’s the honest
-trade-off. But it’s intentional overhead, not wasted time.</li>
-<li><strong>Post-merge reverts dropped 40%.</strong> The bugs we caught
-in review would have been expensive in production.</li>
-<li><strong>Authors started understanding their own code again.</strong>
-The template became a forcing function for comprehension.</li>
-<li><strong>Junior devs improved fastest.</strong> They stopped treating
-AI output as authoritative and started treating it as a first
-draft.</li>
+<li><strong>Review time went up 15%.</strong> That's the honest trade-off. But it's intentional overhead, not wasted time.</li>
+<li><strong>Post-merge reverts dropped 40%.</strong> The bugs we caught in review would have been expensive in production.</li>
+<li><strong>Authors started understanding their own code again.</strong> The template became a forcing function for comprehension.</li>
+<li><strong>Junior devs improved fastest.</strong> They stopped treating AI output as authoritative and started treating it as a first draft.</li>
 </ul>
 <h2>When This Does NOT Apply</h2>
 <ul>
-<li><strong>Throwaway prototypes</strong> — if nobody’s reviewing it,
-the template adds friction for no gain</li>
-<li><strong>Typo/config-only PRs</strong> — don’t make people fill out
-an AI disclosure for a one-line env var change</li>
-<li><strong>Solo projects</strong> — you’re reviewing your own code; the
-opacity is yours to manage</li>
-<li><strong>Teams where AI usage is &lt; 20%</strong> — the overhead
-isn’t justified until AI is a significant portion of your code</li>
+<li><strong>Throwaway prototypes</strong> — if nobody's reviewing it, the template adds friction for no gain</li>
+<li><strong>Typo/config-only PRs</strong> — don't make people fill out an AI disclosure for a one-line env var change</li>
+<li><strong>Solo projects</strong> — you're reviewing your own code; the opacity is yours to manage</li>
+<li><strong>Teams where AI usage is < 20%</strong> — the overhead isn't justified until AI is a significant portion of your code</li>
 </ul>
-<p>This matters when AI-generated code is flowing through your review
-queue regularly and reviewers are struggling to keep up.</p>
+<p>This matters when AI-generated code is flowing through your review queue regularly and reviewers are struggling to keep up.</p>
 <h2>The Uncomfortable Math</h2>
-<p>Here’s the equation most engineering leaders haven’t done:</p>
-<p><strong>Old world:</strong> 10 PRs/week × 45 min review each = 7.5
-hours of review <strong>AI world:</strong> 25 PRs/week × 20 min review
-each = 8.3 hours of review</p>
-<p>You shipped 2.5x more code. Your review burden <em>increased</em>.
-And the review quality per PR dropped because 20 minutes isn’t enough to
-reverse-engineer AI intent.</p>
-<p>The Opacity Tax isn’t a line item on your sprint board. But it’s in
-your bug rate, your technical debt, and your team’s slowly eroding
-confidence in their own codebase.</p>
-<p>Start with the template. It costs nothing and it makes the invisible
-visible.</p>
-<br>
-<p><em>Next week: How we built automated “behavioral tests” that catch
-AI code quality drift before reviewers have to.</em></p>
-<br>
-<p><strong>Tags:</strong> Code Review, AI Engineering, Developer
-Productivity, Software Quality, Engineering Leadership</p>
+<p>Here's the equation most engineering leaders haven't done:</p>
+<p><strong>Old world:</strong> 10 PRs/week × 45 min review each = 7.5 hours of review</p>
+<p><strong>AI world:</strong> 25 PRs/week × 20 min review each = 8.3 hours of review</p>
+<p>You shipped 2.5x more code. Your review burden <em>increased</em>. And the review quality per PR dropped because 20 minutes isn't enough to reverse-engineer AI intent.</p>
+<p>The Opacity Tax isn't a line item on your sprint board. But it's in your bug rate, your technical debt, and your team's slowly eroding confidence in their own codebase.</p>
+<p>Start with the template. It costs nothing and it makes the invisible visible.</p>
+<p><em>Next week: How we built automated "behavioral tests" that catch AI code quality drift before reviewers have to.</em></p>
+<p><strong>Tags:</strong> Code Review, AI Engineering, Developer Productivity, Software Quality, Engineering Leadership</p>
 </body></html>

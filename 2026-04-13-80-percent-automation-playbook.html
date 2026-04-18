@@ -1,138 +1,77 @@
-<html><head><meta charset="utf-8"><title>The 80% Automation Playbook — How to Build a CLI Pipeline That Writes Your PRs</title></head><body>
-<h1
-id="the-80-automation-playbook-how-to-build-a-cli-pipeline-that-writes-your-prs">The
-80% Automation Playbook — How to Build a CLI Pipeline That Writes Your
-PRs</h1>
-<p><strong>Subtitle:</strong> I automated the boring 80% of my job in a
-weekend. The other 20% got harder.</p>
-<p><strong>Tags:</strong> AI, Developer Productivity, Automation,
-Claude, Software Engineering</p>
-<br>
-<p>I didn’t plan to automate my job. I was just tired of triaging Jira
-tickets at 9am on a Monday.</p>
-<p>It started with a script that pulled issues from our GitLab API. By
-Friday, that script was classifying tickets, spinning up branches,
-writing code, and opening PRs — all without me touching my keyboard. I
-went from 6 PRs a week to 30+. And then everything broke in a way I
-didn’t expect.</p>
-<h2>The Problem Nobody Warns You
-About</h2>
-<p>Most “automate your workflow” tutorials stop at the happy path. Hook
-up an LLM, feed it a prompt, watch the magic. What they don’t tell you:
-<strong>the automation isn’t the hard part. Trusting the output
-is.</strong></p>
-<p>I watched an engineer on Reddit describe the same pattern I’d
-stumbled into. 11 years of experience, GitLab API integration, Claude
-CLI doing the heavy lifting. Their system pulled issues, classified them
-by complexity, auto-branched, and opened PRs. Worked great — until a
-“simple CSS fix” rewrote a shared component and broke three other
-pages.</p>
-<p>The 80% of tickets that are genuinely routine? Automatable. The
-problem is that humans are terrible at predicting which tickets fall in
-that 80%.</p>
+<html><head><meta charset="utf-8"><title>The 80% Automation Playbook — How to Build a CLI Pipeline That Writes Your PRs</title></head><body><h1>The 80% Automation Playbook — How to Build a CLI Pipeline That Writes Your PRs</h1>
+<p><strong>Subtitle:</strong> I automated the boring 80% of my job in a weekend. The other 20% got harder.</p>
+<p><strong>Tags:</strong> AI, Developer Productivity, Automation, Claude, Software Engineering</p>
+<p>I didn't plan to automate my job. I was just tired of triaging Jira tickets at 9am on a Monday.</p>
+<p>It started with a script that pulled issues from our GitLab API. By Friday, that script was classifying tickets, spinning up branches, writing code, and opening PRs — all without me touching my keyboard. I went from 6 PRs a week to 30+. And then everything broke in a way I didn't expect.</p>
+<h2>The Problem Nobody Warns You About</h2>
+<p>Most "automate your workflow" tutorials stop at the happy path. Hook up an LLM, feed it a prompt, watch the magic. What they don't tell you: <strong>the automation isn't the hard part. Trusting the output is.</strong></p>
+<p>I watched an engineer on Reddit describe the same pattern I'd stumbled into. 11 years of experience, GitLab API integration, Claude CLI doing the heavy lifting. Their system pulled issues, classified them by complexity, auto-branched, and opened PRs. Worked great — until a "simple CSS fix" rewrote a shared component and broke three other pages.</p>
+<p>The 80% of tickets that are genuinely routine? Automatable. The problem is that humans are terrible at predicting which tickets fall in that 80%.</p>
 <h2>The Ticket Triage Matrix</h2>
-<p>I call it the <strong>Ticket Triage Matrix</strong> — a classifier
-that runs before any automation touches your codebase. It’s not about
-whether a ticket <em>looks</em> simple. It’s about whether it
-<em>stays</em> simple.</p>
+<p>I call it the <strong>Ticket Triage Matrix</strong> — a classifier that runs before any automation touches your codebase. It's not about whether a ticket <em>looks</em> simple. It's about whether it <em>stays</em> simple.</p>
 <p>The matrix scores every ticket on four dimensions:</p>
-<ol type="1">
-<li><strong>Blast radius</strong> — How many files/components does this
-touch? (1 file = safe, 5+ = manual)</li>
-<li><strong>Test coverage</strong> — Does the affected code have tests?
-(&gt;80% = safe, &lt;50% = manual)</li>
-<li><strong>Dependency depth</strong> — Is this a leaf node or does it
-sit in a call chain? (leaf = safe, hub = manual)</li>
-<li><strong>Historical volatility</strong> — Has this file caused
-rollbacks before? (stable = safe, hot = manual)</li>
-</ol>
-<p>Score 4/4? Automate it. Score 2/4? Human reviews the PR before merge.
-Score 0-1? Don’t even try.</p>
-<h2>What This Looks Like: Bad vs
-Good</h2>
-<p><strong>Bad — “just automate everything”:</strong></p>
-<div class="sourceCode"><pre
-class="sourceCode yaml"><code class="sourceCode yaml"><span><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dangerous-pipeline.yml</span></span>
-<span><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">on_new_ticket</span><span class="kw">:</span></span>
-<span><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> classify_with_llm</span></span>
-<span><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> create_branch</span></span>
-<span><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> generate_code</span></span>
-<span><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> open_pr</span></span>
-<span><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> auto_merge</span><span class="co">  # 💀</span></span></code></pre></div>
-<p>You’ll ship a breaking change by Thursday.</p>
+<p>1. <strong>Blast radius</strong> — How many files/components does this touch? (1 file = safe, 5+ = manual)</p>
+<p>2. <strong>Test coverage</strong> — Does the affected code have tests? (>80% = safe, <50% = manual)</p>
+<p>3. <strong>Dependency depth</strong> — Is this a leaf node or does it sit in a call chain? (leaf = safe, hub = manual)</p>
+<p>4. <strong>Historical volatility</strong> — Has this file caused rollbacks before? (stable = safe, hot = manual)</p>
+<p>Score 4/4? Automate it. Score 2/4? Human reviews the PR before merge. Score 0-1? Don't even try.</p>
+<h2>What This Looks Like: Bad vs Good</h2>
+<p><strong>Bad — "just automate everything":</strong></p>
+<pre><code># dangerous-pipeline.yml
+on_new_ticket:
+  - classify_with_llm
+  - create_branch
+  - generate_code
+  - open_pr
+  - auto_merge  # 💀</code></pre>
+<p>You'll ship a breaking change by Thursday.</p>
 <p><strong>Good — gated automation:</strong></p>
-<div class="sourceCode"><pre
-class="sourceCode yaml"><code class="sourceCode yaml"><span><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># safe-pipeline.yml</span></span>
-<span><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">on_new_ticket</span><span class="kw">:</span></span>
-<span><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> classify_with_llm</span></span>
-<span><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">score_with_triage_matrix</span><span class="kw">:</span></span>
-<span><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">blast_radius</span><span class="kw">:</span><span class="at"> check_files_touched</span></span>
-<span><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">test_coverage</span><span class="kw">:</span><span class="at"> query_codecov</span></span>
-<span><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">dependency_depth</span><span class="kw">:</span><span class="at"> parse_import_graph</span></span>
-<span><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">historical_volatility</span><span class="kw">:</span><span class="at"> git_log_rollbacks</span></span>
-<span><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">gate</span><span class="kw">:</span></span>
-<span><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">score_4</span><span class="kw">:</span><span class="at"> auto_branch → auto_code → auto_pr → auto_merge</span></span>
-<span><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">score_2_3</span><span class="kw">:</span><span class="at"> auto_branch → auto_code → auto_pr → HUMAN_REVIEW</span></span>
-<span><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">score_0_1</span><span class="kw">:</span><span class="at"> assign_to_human</span></span></code></pre></div>
-<p>The difference? One line: the gate. That’s it. But it’s the line that
-keeps you employed.</p>
+<pre><code># safe-pipeline.yml
+on_new_ticket:
+  - classify_with_llm
+  - score_with_triage_matrix:
+      blast_radius: check_files_touched
+      test_coverage: query_codecov
+      dependency_depth: parse_import_graph
+      historical_volatility: git_log_rollbacks
+  - gate:
+      score_4: auto_branch → auto_code → auto_pr → auto_merge
+      score_2_3: auto_branch → auto_code → auto_pr → HUMAN_REVIEW
+      score_0_1: assign_to_human</code></pre>
+<p>The difference? One line: the gate. That's it. But it's the line that keeps you employed.</p>
 <h2>The Copy-Paste Starter</h2>
-<p>Here’s the classifier prompt I use. Drop it into your pipeline and
-adapt:</p>
-<div class="sourceCode"><pre
-class="sourceCode markdown"><code class="sourceCode markdown"><span><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## Ticket Triage Classifier</span></span>
-<span><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>Given this ticket, score each dimension 0 or 1:</span>
-<span><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>BLAST RADIUS: Will this change touch ≤2 files? (1=yes, 0=no)</span>
-<span><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>TEST COVERAGE: Do affected files have &gt;80% test coverage? (1=yes, 0=no)</span>
-<span><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>DEPENDENCY DEPTH: Is the affected code a leaf node (not imported by 3+ modules)? (1=yes, 0=no)</span>
-<span><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>HISTORICAL VOLATILITY: Has this file had 0 rollbacks in the last 90 days? (1=yes, 0=no)</span>
-<span><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>Output: { &quot;scores&quot;: <span class="co">[</span><span class="ot">x,x,x,x</span><span class="co">]</span>, &quot;total&quot;: N, &quot;recommendation&quot;: &quot;automate|review|manual&quot; }</span>
-<span><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>Ticket: {ticket_description}</span>
-<span><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>Files likely affected: {predicted_files}</span></code></pre></div>
-<p>Pair this with your GitLab/GitHub API, a code coverage tool, and
-<code>git log --oneline</code> for rollback history. The whole thing
-runs in under 10 seconds per ticket.</p>
+<p>Here's the classifier prompt I use. Drop it into your pipeline and adapt:</p>
+<pre><code>## Ticket Triage Classifier
+
+Given this ticket, score each dimension 0 or 1:
+
+1. BLAST RADIUS: Will this change touch ≤2 files? (1=yes, 0=no)
+2. TEST COVERAGE: Do affected files have &gt;80% test coverage? (1=yes, 0=no)
+3. DEPENDENCY DEPTH: Is the affected code a leaf node (not imported by 3+ modules)? (1=yes, 0=no)
+4. HISTORICAL VOLATILITY: Has this file had 0 rollbacks in the last 90 days? (1=yes, 0=no)
+
+Output: { "scores": [x,x,x,x], "total": N, "recommendation": "automate|review|manual" }
+
+Ticket: {ticket_description}
+Files likely affected: {predicted_files}</code></pre>
+<p>Pair this with your GitLab/GitHub API, a code coverage tool, and <code>git log --oneline</code> for rollback history. The whole thing runs in under 10 seconds per ticket.</p>
 <h2>When NOT to Use This</h2>
-<p>Don’t automate ticket triage if:</p>
+<p>Don't automate ticket triage if:</p>
 <ul>
-<li><strong>Your codebase has &lt;40% test coverage overall.</strong>
-You’re flying blind — the matrix can’t score what doesn’t exist. Fix
-coverage first.</li>
-<li><strong>You’re a team of 1-2.</strong> The overhead of building the
-pipeline isn’t worth it until you’re drowning in tickets. Just use
-Copilot in your editor.</li>
-<li><strong>Your tickets are vague.</strong> “Fix the thing” doesn’t
-give the classifier enough signal. Garbage in, garbage out. Fix your
-ticket hygiene first.</li>
-<li><strong>You ship to regulated environments.</strong> Healthcare,
-finance, aviation — every PR needs a human signature regardless. The
-matrix helps prioritize, but it can’t replace compliance review.</li>
+<li><strong>Your codebase has <40% test coverage overall.</strong> You're flying blind — the matrix can't score what doesn't exist. Fix coverage first.</li>
+<li><strong>You're a team of 1-2.</strong> The overhead of building the pipeline isn't worth it until you're drowning in tickets. Just use Copilot in your editor.</li>
+<li><strong>Your tickets are vague.</strong> "Fix the thing" doesn't give the classifier enough signal. Garbage in, garbage out. Fix your ticket hygiene first.</li>
+<li><strong>You ship to regulated environments.</strong> Healthcare, finance, aviation — every PR needs a human signature regardless. The matrix helps prioritize, but it can't replace compliance review.</li>
 </ul>
 <h2>What Actually Happened</h2>
-<p>After three weeks with the Ticket Triage Matrix, here’s what I
-found:</p>
+<p>After three weeks with the Ticket Triage Matrix, here's what I found:</p>
 <ul>
 <li>~35% of our tickets scored 4/4. Those got fully automated.</li>
-<li>~40% scored 2-3. Those got auto-coded but human-reviewed. Review
-time dropped because the PR was already well-scoped.</li>
-<li>~25% scored 0-1. Those went straight to a human. No wasted
-automation cycles.</li>
+<li>~40% scored 2-3. Those got auto-coded but human-reviewed. Review time dropped because the PR was already well-scoped.</li>
+<li>~25% scored 0-1. Those went straight to a human. No wasted automation cycles.</li>
 </ul>
-<p>The surprise? My actual engineering work got <em>harder</em>. The
-easy tickets disappeared. Every ticket on my plate was now a gnarly,
-high-blast-radius problem. I got better faster because I wasn’t wasting
-cycles on CSS tweaks and copy changes.</p>
-<h2>What’s Next</h2>
-<p>Next week I’m writing about the failure modes — what happens when the
-classifier gets it wrong, and the monitoring setup that catches bad
-automations before they hit production. If you’ve built something
-similar, I want to hear what broke first.</p>
-<br>
-<p><em>The Ticket Triage Matrix is part of a broader pattern I’m seeing:
-the teams winning with AI aren’t the ones automating everything. They’re
-the ones who got really good at deciding what NOT to automate.</em></p>
+<p>The surprise? My actual engineering work got <em>harder</em>. The easy tickets disappeared. Every ticket on my plate was now a gnarly, high-blast-radius problem. I got better faster because I wasn't wasting cycles on CSS tweaks and copy changes.</p>
+<h2>What's Next</h2>
+<p>Next week I'm writing about the failure modes — what happens when the classifier gets it wrong, and the monitoring setup that catches bad automations before they hit production. If you've built something similar, I want to hear what broke first.</p>
+<p><em>The Ticket Triage Matrix is part of a broader pattern I'm seeing: the teams winning with AI aren't the ones automating everything. They're the ones who got really good at deciding what NOT to automate.</em></p>
 </body></html>

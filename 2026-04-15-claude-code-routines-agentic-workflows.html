@@ -1,126 +1,80 @@
-<html><head><meta charset="utf-8"><title>Claude Code Routines Changes Everything About Agentic Dev Workflows</title></head><body>
-<h1
-id="claude-code-routines-changes-everything-about-agentic-dev-workflows">Claude
-Code Routines Changes Everything About Agentic Dev Workflows</h1>
-<p>I woke up last Tuesday to a PR I didn’t write.</p>
-<p>Not from a teammate in another timezone. From a routine I’d set up
-three days earlier and forgotten about. It had triaged an overnight
-alert, correlated the stack trace with a commit from Monday, and opened
-a draft fix. The fix was wrong — off by one table join — but the
-diagnosis was dead on. I spent 9 minutes instead of 45.</p>
-<p>That’s when it clicked: we crossed a line. Coding agents aren’t
-interactive tools anymore. They’re infrastructure.</p>
-<h2>The Problem:
-We’re Still Treating Agents Like REPLs</h2>
-<p>Most teams using AI coding assistants are stuck in what I call
-<strong>REPL mode</strong>. You open a terminal. You type a prompt. You
-wait. You iterate. You close the laptop and the agent stops
-existing.</p>
-<p>This is how we used to run database queries before cron jobs. Before
-webhooks. Before event-driven architecture. We sat there and typed
-<code>SELECT</code> statements by hand.</p>
-<p>Anthropic just shipped Claude Code Routines — scheduled,
-API-triggered, and GitHub-event-driven agent runs on cloud
-infrastructure. 630 points on Hacker News. 4,097 reactions on LinkedIn.
-The signal is loud because the shift is real.</p>
-<p>But the feature isn’t the story. The pattern is.</p>
-<h2>The TAP
-Framework: Three Modes of Agent Autonomy</h2>
-<p>I’ve been thinking about this as <strong>TAP</strong> — the three
-stages every team goes through with coding agents:</p>
-<p><strong>T — Terminal (Interactive).</strong> You prompt, it responds.
-This is where 95% of teams are today. The agent is a fancy autocomplete.
-It dies when you close the tab.</p>
-<p><strong>A — Automated (Scheduled).</strong> The agent runs on a
-cadence without you. Nightly backlog grooming. Weekly docs-drift checks.
-Post-deploy smoke tests. You set it up once and it keeps working when
-your laptop’s closed.</p>
-<p><strong>P — Proactive (Event-Driven).</strong> The agent reacts to
-things happening in your system. A PR opens and it runs your custom
-review checklist. An alert fires and it opens a draft fix. A library
-merges a change and the agent ports it to your other SDK.</p>
-<p>Most teams think they’re innovative at T. The real leverage is at A
-and P.</p>
-<h2>What This Looked Like
-Before vs. After</h2>
+<html><head><meta charset="utf-8"><title>Article</title></head><body><h1>Article</h1>
+<h1>Claude Code Routines Changes Everything About Agentic Dev Workflows</h1>
+<p>I woke up last Tuesday to a PR I didn't write.</p>
+<p>Not from a teammate in another timezone. From a routine I'd set up three days earlier and forgotten about. It had triaged an overnight alert, correlated the stack trace with a commit from Monday, and opened a draft fix. The fix was wrong — off by one table join — but the diagnosis was dead on. I spent 9 minutes instead of 45.</p>
+<p>That's when it clicked: we crossed a line. Coding agents aren't interactive tools anymore. They're infrastructure.</p>
+<h2>The Problem: We're Still Treating Agents Like REPLs</h2>
+<p>Most teams using AI coding assistants are stuck in what I call <strong>REPL mode</strong>. You open a terminal. You type a prompt. You wait. You iterate. You close the laptop and the agent stops existing.</p>
+<p>This is how we used to run database queries before cron jobs. Before webhooks. Before event-driven architecture. We sat there and typed <code>SELECT</code> statements by hand.</p>
+<p>Anthropic just shipped Claude Code Routines — scheduled, API-triggered, and GitHub-event-driven agent runs on cloud infrastructure. 630 points on Hacker News. 4,097 reactions on LinkedIn. The signal is loud because the shift is real.</p>
+<p>But the feature isn't the story. The pattern is.</p>
+<h2>The TAP Framework: Three Modes of Agent Autonomy</h2>
+<p>I've been thinking about this as <strong>TAP</strong> — the three stages every team goes through with coding agents:</p>
+<p><strong>T — Terminal (Interactive).</strong> You prompt, it responds. This is where 95% of teams are today. The agent is a fancy autocomplete. It dies when you close the tab.</p>
+<p><strong>A — Automated (Scheduled).</strong> The agent runs on a cadence without you. Nightly backlog grooming. Weekly docs-drift checks. Post-deploy smoke tests. You set it up once and it keeps working when your laptop's closed.</p>
+<p><strong>P — Proactive (Event-Driven).</strong> The agent reacts to things happening in your system. A PR opens and it runs your custom review checklist. An alert fires and it opens a draft fix. A library merges a change and the agent ports it to your other SDK.</p>
+<p>Most teams think they're innovative at T. The real leverage is at A and P.</p>
+<h2>What This Looked Like Before vs. After</h2>
 <p><strong>Before (Terminal mode):</strong></p>
 <pre><code># Monday morning ritual
-$ claude &quot;review the PRs from this weekend&quot;
+$ claude "review the PRs from this weekend"
 # ... wait 4 minutes ...
 # ... read output ...
 # ... realize you forgot to check the staging alerts ...
-$ claude &quot;check staging error logs since Friday&quot;
+$ claude "check staging error logs since Friday"
 # ... wait 3 minutes ...
 # Repeat every Monday forever</code></pre>
 <p><strong>After (Automated + Proactive):</strong></p>
-<div class="sourceCode"><pre
-class="sourceCode yaml"><code class="sourceCode yaml"><span><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># routine: monday-morning-triage</span></span>
-<span><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">trigger</span><span class="kw">:</span></span>
-<span><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">schedule</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;0 6 * * MON&quot;</span><span class="co">    # 6am every Monday</span></span>
-<span><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">github</span><span class="kw">:</span><span class="at"> pull_request.opened</span><span class="co">  # also on new PRs</span></span>
-<span><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">prompt</span><span class="kw">: </span><span class="ch">|</span></span>
-<span><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  1. Review all open PRs against REVIEW_CHECKLIST.md</span>
-<span><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  2. Scan error logs since last run</span>
-<span><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  3. Correlate new errors with recent commits</span>
-<span><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  4. Post summary to #engineering Slack</span>
-<span><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  5. Open draft PRs for any clear fixes</span></code></pre></div>
-<p>The Monday morning ritual takes zero minutes now. It happened at 6am
-while I was asleep.</p>
+<pre><code># routine: monday-morning-triage
+trigger:
+  schedule: "0 6 * * MON"    # 6am every Monday
+  github: pull_request.opened  # also on new PRs
+
+prompt: |
+  1. Review all open PRs against REVIEW_CHECKLIST.md
+  2. Scan error logs since last run
+  3. Correlate new errors with recent commits
+  4. Post summary to #engineering Slack
+  5. Open draft PRs for any clear fixes</code></pre>
+<p>The Monday morning ritual takes zero minutes now. It happened at 6am while I was asleep.</p>
 <h2>The Copy-Paste Starter Kit</h2>
-<p>Here’s the routine setup I’d start with if you’re on a team of 3-15
-engineers:</p>
-<p><strong>Routine 1: Nightly Backlog Groomer</strong> - Trigger:
-Schedule, every weeknight at 10pm - Prompt: Read issues opened today.
-Apply labels based on code areas referenced. Assign to owner of that
-directory. Post summary to team channel. - Time saved: ~20 min/day</p>
-<p><strong>Routine 2: PR Review Bot (Your Rules)</strong> - Trigger:
-GitHub <code>pull_request.opened</code> - Prompt: Review against our
-checklist (security, perf, style). Leave inline comments. Add summary
-comment with severity rating. - Time saved: ~15 min/PR for first-pass
-review</p>
-<p><strong>Routine 3: Post-Deploy Verification</strong> - Trigger: API
-(called from your CD pipeline) - Prompt: Run smoke checks. Scan error
-logs for new patterns. Compare error rates to pre-deploy baseline. Post
-go/no-go to release channel. - Time saved: ~30 min/deploy</p>
-<p><strong>Routine 4: Docs Drift Detector</strong> - Trigger: Schedule,
-weekly on Sundays - Prompt: Scan merged PRs this week. Find docs
-referencing changed APIs. Open update PRs for stale docs. - Time saved:
-docs actually stay current (novel concept)</p>
-<h2>When NOT to Use This</h2>
-<p>Routines aren’t the answer for everything. Don’t use them for:</p>
+<p>Here's the routine setup I'd start with if you're on a team of 3-15 engineers:</p>
+<p><strong>Routine 1: Nightly Backlog Groomer</strong></p>
 <ul>
-<li><strong>Creative architecture decisions.</strong> Agents are great
-at applying patterns, terrible at inventing them. Keep design work
-interactive.</li>
-<li><strong>Anything touching production data directly.</strong> Draft
-PRs, yes. Running migrations autonomously, absolutely not. The 9-minute
-fix I mentioned? I still reviewed it before merging.</li>
-<li><strong>Teams without clear checklists.</strong> If your review
-standards live in someone’s head, an agent can’t follow them. Write them
-down first. The routine is only as good as the prompt.</li>
-<li><strong>Solo projects where you’re the only reviewer.</strong> The
-overhead of setting up routines outweighs the benefit if nobody else is
-in the loop.</li>
+<li>Trigger: Schedule, every weeknight at 10pm</li>
+<li>Prompt: Read issues opened today. Apply labels based on code areas referenced. Assign to owner of that directory. Post summary to team channel.</li>
+<li>Time saved: ~20 min/day</li>
 </ul>
-<h2>What’s Next</h2>
-<p>We’re in the first week of this shift. Routines today are
-Claude-only, cloud-only, and limited to GitHub as the event source. But
-the pattern — agents that run autonomously on triggers — is going to
-show up everywhere.</p>
-<p>OpenAI’s Symphony project is already exploring manager agents that
-dispatch coding workers. GitHub’s Copilot Workspace is heading toward
-persistent agents. The trend is convergent: agents are becoming
-services, not sessions.</p>
-<p>The question isn’t whether your team will adopt autonomous coding
-agents. It’s whether you’ll be the one setting them up, or the one
-wondering why PRs are getting reviewed at 6am by something that doesn’t
-drink coffee.</p>
-<p>I’d start with one routine. The nightly backlog groomer. It takes 10
-minutes to set up and it’ll change how you think about what agents are
-for.</p>
-<br>
-<p><em>Building agentic developer workflows at the intersection of AI
-and engineering. More at <a
-href="https://medium.com/@phoenixai.hub">phoenixai.hub</a>.</em></p>
+<p><strong>Routine 2: PR Review Bot (Your Rules)</strong></p>
+<ul>
+<li>Trigger: GitHub <code>pull_request.opened</code></li>
+<li>Prompt: Review against our checklist (security, perf, style). Leave inline comments. Add summary comment with severity rating.</li>
+<li>Time saved: ~15 min/PR for first-pass review</li>
+</ul>
+<p><strong>Routine 3: Post-Deploy Verification</strong></p>
+<ul>
+<li>Trigger: API (called from your CD pipeline)</li>
+<li>Prompt: Run smoke checks. Scan error logs for new patterns. Compare error rates to pre-deploy baseline. Post go/no-go to release channel.</li>
+<li>Time saved: ~30 min/deploy</li>
+</ul>
+<p><strong>Routine 4: Docs Drift Detector</strong></p>
+<ul>
+<li>Trigger: Schedule, weekly on Sundays</li>
+<li>Prompt: Scan merged PRs this week. Find docs referencing changed APIs. Open update PRs for stale docs.</li>
+<li>Time saved: docs actually stay current (novel concept)</li>
+</ul>
+<h2>When NOT to Use This</h2>
+<p>Routines aren't the answer for everything. Don't use them for:</p>
+<ul>
+<li><strong>Creative architecture decisions.</strong> Agents are great at applying patterns, terrible at inventing them. Keep design work interactive.</li>
+<li><strong>Anything touching production data directly.</strong> Draft PRs, yes. Running migrations autonomously, absolutely not. The 9-minute fix I mentioned? I still reviewed it before merging.</li>
+<li><strong>Teams without clear checklists.</strong> If your review standards live in someone's head, an agent can't follow them. Write them down first. The routine is only as good as the prompt.</li>
+<li><strong>Solo projects where you're the only reviewer.</strong> The overhead of setting up routines outweighs the benefit if nobody else is in the loop.</li>
+</ul>
+<h2>What's Next</h2>
+<p>We're in the first week of this shift. Routines today are Claude-only, cloud-only, and limited to GitHub as the event source. But the pattern — agents that run autonomously on triggers — is going to show up everywhere.</p>
+<p>OpenAI's Symphony project is already exploring manager agents that dispatch coding workers. GitHub's Copilot Workspace is heading toward persistent agents. The trend is convergent: agents are becoming services, not sessions.</p>
+<p>The question isn't whether your team will adopt autonomous coding agents. It's whether you'll be the one setting them up, or the one wondering why PRs are getting reviewed at 6am by something that doesn't drink coffee.</p>
+<p>I'd start with one routine. The nightly backlog groomer. It takes 10 minutes to set up and it'll change how you think about what agents are for.</p>
+<p><em>Building agentic developer workflows at the intersection of AI and engineering. More at <a href="https://medium.com/@phoenixai.hub">phoenixai.hub</a>.</em></p>
 </body></html>
