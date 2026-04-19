@@ -2,95 +2,47 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Your RAG Pipeline Doesn't Understand Code Structure. Mine Uses a Knowledge Graph.</title>
+<title>Article</title>
 </head>
 <body>
-<h1>Your RAG Pipeline Doesn't Understand Code Structure. Mine Uses a Knowledge Graph.</h1>
+<h1>Article</h1>
 <p><em>Why vector search fails on codebases, and how graph-based RAG actually works.</em></p>
-
 <p>I asked my RAG system "how does authentication work in this codebase?" It returned five code snippets — all technically relevant, none showing the actual flow. It found the login function, the token validator, and the middleware. But it couldn't connect them into a coherent answer because it didn't understand that they form a pipeline.</p>
-
 <p>I call this <strong>The Graph Gap</strong> — the difference between what vector search retrieves and what developers actually need to understand code.</p>
-
 <h2>Why Vector Search Fails on Code</h2>
-
 <p>Consider a typical authentication flow across three files:</p>
-
-<pre><code># auth/login.py
-def login(username, password):
-    user = UserStore.lookup(username)
-    if verify_password(password, user.hash):
-        return TokenService.create_token(user)
-
-<p># auth/tokens.py  
-class TokenService:
-    def create_token(self, user):
-        payload = {"sub": user.id, "exp": now() + TTL}
-        return jwt.encode(payload, SECRET_KEY)</p>
-
-<p># middleware/auth.py
-def require_auth(handler):
-    def wrapper(request):
-        token = request.headers.get("Authorization")
-        user = TokenService.validate_token(token)
-        return handler(request, user=user)
-    return wrapper</code></pre></p>
-
 <p>A vector search for "how does authentication work" might return all three snippets. But it can't tell you that <code>login()</code> calls <code>TokenService.create_token()</code>, which produces a JWT that <code>require_auth()</code> later validates via <code>TokenService.validate_token()</code>. The flow — the actual answer — lives in the relationships between these functions, not in the functions themselves.</p>
-
 <p>Worse, in a large codebase, the relevant snippets might be buried under dozens of higher-similarity but less relevant results. A utility function with "auth" in its docstring might rank higher than the middleware that actually enforces authentication.</p>
-
 <h2>The Graph Approach</h2>
-
 <p>I built two tools that solve this by modeling code as a knowledge graph rather than a bag of embeddings.</p>
-
 <p><strong><a href="https://github.com/phoenix-assistant/local-code-knowledge-graph">local-code-knowledge-graph</a></strong> parses your codebase and builds a graph of relationships: function calls, class inheritance, module imports, type references, and data flow. Every entity (function, class, module, variable) becomes a node. Every relationship becomes an edge.</p>
-
 <p><strong><a href="https://github.com/phoenix-assistant/graph-rag-private-codebases">graph-rag-private-codebases</a></strong> queries that graph with graph-aware RAG. When you ask "how does authentication work," it doesn't just find relevant code — it traverses the graph to reconstruct the flow. It starts at <code>login()</code>, follows the call to <code>create_token()</code>, finds every consumer of tokens, and returns a connected subgraph that tells the complete story.</p>
-
-<pre><code># Build the knowledge graph (runs locally)
-code-kg build ./my-project --languages python,typescript
-
-<p># Query with graph-aware RAG
-code-kg query "how does authentication work?"
-# Returns: connected subgraph with call chain,
-# not isolated snippets</code></pre></p>
-
 <h2>What the Graph Captures</h2>
-
 <p>The knowledge graph indexes six relationship types that embeddings miss entirely:</p>
-
-<ol><li><strong>Call graphs</strong> — which functions call which other functions, including cross-file and cross-module calls.</li><li><strong>Import chains</strong> — module dependency trees, including transitive dependencies.</li><li><strong>Type hierarchies</strong> — class inheritance, interface implementations, type aliases.</li><li><strong>Data flow</strong> — how data moves through the system, from input to storage to output.</li><li><strong>Error propagation</strong> — which functions throw exceptions and where they're caught.</li><li><strong>Configuration dependencies</strong> — which code paths depend on environment variables, feature flags, or config files.</li></ol>
-When you query "what happens when a user uploads a file," the graph traverses from the upload endpoint through validation, storage, thumbnail generation, and notification — returning the complete pipeline, not fragments.
-
+<p>1. <strong>Call graphs</strong> — which functions call which other functions, including cross-file and cross-module calls.</p>
+<p>2. <strong>Import chains</strong> — module dependency trees, including transitive dependencies.</p>
+<p>3. <strong>Type hierarchies</strong> — class inheritance, interface implementations, type aliases.</p>
+<p>4. <strong>Data flow</strong> — how data moves through the system, from input to storage to output.</p>
+<p>5. <strong>Error propagation</strong> — which functions throw exceptions and where they're caught.</p>
+<p>6. <strong>Configuration dependencies</strong> — which code paths depend on environment variables, feature flags, or config files.</p>
+<p>When you query "what happens when a user uploads a file," the graph traverses from the upload endpoint through validation, storage, thumbnail generation, and notification — returning the complete pipeline, not fragments.</p>
 <h2>The Privacy Argument</h2>
-
 <p>Both tools run entirely locally. Your code never leaves your machine. There's no cloud indexing, no API calls during graph construction, no telemetry.</p>
-
 <p>This matters for private codebases — proprietary business logic, internal tools, pre-release features. The standard alternative is a cloud-hosted code intelligence service that requires uploading your source code. For many organizations, that's a non-starter. Compliance, IP protection, and security policies prohibit sending source code to third-party services.</p>
-
 <p>Local graph construction means you get the intelligence without the exposure.</p>
-
 <h2>Embedding + Graph: Better Together</h2>
-
 <p>Graph RAG doesn't replace vector search — it augments it. The system uses a hybrid retrieval strategy:</p>
-
-<ol><li><strong>Vector search</strong> identifies candidate nodes — functions and classes that are semantically similar to the query.</li><li><strong>Graph traversal</strong> expands from those candidates — following call chains, inheritance trees, and data flow to find the connected context.</li><li><strong>Ranking</strong> combines semantic similarity with graph centrality — nodes that are both relevant AND well-connected rank highest.</li></ol>
-This hybrid approach consistently outperforms pure vector search on structural queries ("how does X work," "what calls Y," "what happens when Z fails") while maintaining competitive performance on simple lookup queries ("find the function that validates emails").
-
+<p>1. <strong>Vector search</strong> identifies candidate nodes — functions and classes that are semantically similar to the query.</p>
+<p>2. <strong>Graph traversal</strong> expands from those candidates — following call chains, inheritance trees, and data flow to find the connected context.</p>
+<p>3. <strong>Ranking</strong> combines semantic similarity with graph centrality — nodes that are both relevant AND well-connected rank highest.</p>
+<p>This hybrid approach consistently outperforms pure vector search on structural queries ("how does X work," "what calls Y," "what happens when Z fails") while maintaining competitive performance on simple lookup queries ("find the function that validates emails").</p>
 <h2>When NOT to Use This</h2>
-
 <ul><li><strong>Small codebases under 10K lines of code.</strong> Grep and manual navigation are faster. The graph adds overhead that isn't justified when you can read the whole codebase in an afternoon.</li><li><strong>Documentation-only RAG.</strong> If you're indexing markdown, wikis, or API docs, there are no code relationships to model. Standard vector search works fine.</li><li><strong>Single-language scripting projects.</strong> If your entire project is one Python script with no imports, there's no graph to build.</li><li><strong>Real-time IDE completion.</strong> Graph construction takes seconds to minutes depending on codebase size. It's designed for query-time intelligence, not keystroke-level autocomplete.</li></ul>
 <h2>The Bigger Picture</h2>
-
 <p>The AI coding tool ecosystem invested heavily in making models write code faster. But writing code was never the hard part for experienced engineers — understanding existing code was. Onboarding to a new codebase, tracing bugs through unfamiliar call chains, understanding why a particular design decision was made.</p>
-
 <p>Graph-based RAG addresses the understanding problem directly. Instead of asking "generate code that does X," you ask "explain how X currently works in this codebase" — and get an answer that reflects the actual architecture, not a hallucinated guess.</p>
-
 <p><strong>The tools:</strong> <a href="https://github.com/phoenix-assistant/local-code-knowledge-graph">local-code-knowledge-graph</a> | <a href="https://github.com/phoenix-assistant/graph-rag-private-codebases">graph-rag-private-codebases</a></p>
-
-<p>---</p>
-
+<hr>
 <p><em>Tags: RAG, Knowledge Graphs, Developer Tools, Code Understanding, AI</em></p>
 </body>
 </html>

@@ -2,101 +2,45 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>I Shipped an AI Agent With eval() in the Tool Chain. Then I Built 5 Security Scanners. Here's the Arsenal.</title>
+<title>Article</title>
 </head>
 <body>
-<h1>I Shipped an AI Agent With eval() in the Tool Chain. Then I Built 5 Security Scanners. Here's the Arsenal.</h1>
+<h1>Article</h1>
 <p><em>Traditional security tools can't see AI vulnerabilities. I built the tools that can.</em></p>
-
 <p>Three weeks ago I reviewed a PR for an AI agent. Clean code. Good tests. LangChain tools looked reasonable. I approved it.</p>
-
 <p>Two days later, a teammate found that one of the tools called <code>eval()</code> on a string that originated from user input, passed through the LLM, and arrived at the tool completely unvalidated. A prompt injection away from arbitrary code execution.</p>
-
 <p>My review process — the one I've used for years — completely missed it. Because my brain was trained to catch traditional vulnerabilities, not agent-specific ones. That failure launched me into building five different security tools, each targeting a different part of the AI attack surface.</p>
-
 <h2>The AI Security Stack</h2>
-
 <p>I call it <strong>The Five-Layer Defense</strong> — a framework for mapping AI-specific attack surfaces that traditional security tools can't see.</p>
-
 <p>After months of building, I've identified five distinct security layers that every team deploying AI needs. Most teams cover zero of them. The best cover two. Here's all five:</p>
-
 <h3>Layer 1: Agent Code Scanning (The Agent Attack Surface)</h3>
-
 <p><strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/agent-security-scanner">agent-security-scanner</a></p>
-
 <p>Static analysis for agent-specific vulnerabilities. Traditional linters catch <code>eval()</code> — this catches <code>eval()</code> fed by LLM output from user-controlled prompts. The attack chain is what matters.</p>
-
-<pre><code># .agent-security.yml — drop in your repo
-rules:
-  prompt_injection:    severity: critical
-  tool_chain_escalation: severity: high
-  over_permissioned:   severity: high
-  missing_sandbox:     severity: critical
-  data_exfiltration:   severity: critical</code></pre>
-
 <h3>Layer 2: AI-Powered Vulnerability Discovery (LARA)</h3>
-
 <p><strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/ai-vulnerability-scanner-oss">ai-vulnerability-scanner-oss</a></p>
-
 <p>Beyond CVE databases. Uses local LLMs (Ollama/llama.cpp) to reason about your code — finding logic bugs, path traversals, and injection patterns that no CVE database knows about. Runs entirely on your machine. Your code never leaves.</p>
-
 <p>The key insight: CVE databases are backward-looking. They catalog known vulnerabilities. LARA reasons forward — identifying patterns that <em>could</em> be vulnerable based on code structure and data flow, even if no CVE exists yet.</p>
-
 <p><strong>LARA: Local AI Risk Assessment</strong> — Lexical scan → AST analysis → Reasoning pass → Attestation.</p>
-
 <h3>Layer 3: Red Team Framework (The Security Blindspot)</h3>
-
 <p><strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/ai-agent-security-testing">ai-agent-security-testing</a></p>
-
 <p>Automated red teaming for agents. Prompt injection, tool misuse, data exfiltration, privilege escalation, jailbreaking — all tested programmatically. Think OWASP ZAP, but for agents.</p>
-
 <h3>Layer 4: Air-Gapped Pentesting (The Air-Gap Principle)</h3>
-
 <p><strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/local-ai-pentest-suite">local-ai-pentest-suite</a></p>
-
 <p>For security professionals who can't send client data to cloud APIs. Gemma + LangGraph + Kali, all running locally. Your client's attack surface never touches the internet.</p>
-
 <h3>Layer 5: Shadow AI Discovery (SHADE)</h3>
-
 <p><strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/shadow-ai-detector">shadow-ai-detector</a></p>
-
 <p>I found 143 unauthorized AI tools in one organization. Their "approved" list had 6. SHADE scans for unauthorized AI usage: browser extensions, SaaS connections, API calls to AI endpoints your security team doesn't know about.</p>
-
 <h2>Bad vs Good: The Full Stack</h2>
-
-<p><strong>❌ Most teams' AI security:</strong>
-<pre><code>✓ npm audit (dependency CVEs only)
-✓ ESLint (style, not security)
-✗ Agent-specific scanning
-✗ AI-powered code analysis
-✗ Red team testing
-✗ Air-gapped pentesting
-✗ Shadow AI detection</code></pre></p>
-
-<p><strong>✅ The full AI security arsenal:</strong>
-<pre><code>Layer 1: agent-security-scanner  → CI/CD, every PR
-Layer 2: ai-vuln-scanner         → Weekly deep scan
-Layer 3: ai-agent-security-test  → Pre-release red team
-Layer 4: local-ai-pentest-suite  → Client engagements
-Layer 5: shadow-ai-detector      → Monthly org scan</code></pre></p>
-
+<p><strong>❌ Most teams' AI security:</strong></p>
+<p><strong>✅ The full AI security arsenal:</strong></p>
 <h2>The Copy-Paste Checklist</h2>
-
-<pre><code><h2>AI Security Pre-Ship Checklist</h2>
-<ul><li>[ ] Agent scanner: 0 critical, 0 high findings</li><li>[ ] Vuln scanner: local LLM reasoning pass clean</li><li>[ ] Red team: prompt injection suite passed</li><li>[ ] Red team: data exfiltration probes blocked</li><li>[ ] Red team: privilege escalation denied</li><li>[ ] Shadow AI: no unauthorized tools in team</li><li>[ ] All scans ran locally (no code to cloud)</code></pre></li></ul>
 <h2>When NOT to Use This</h2>
-
 <ul><li><strong>Prototypes/hackathons</strong> — security scanning slows iteration. Ship fast, scan before production.</li><li><strong>Non-agentic AI</strong> — if your AI is a simple API call with no tools, Layers 1 and 3 add overhead without value. Layer 2 still applies.</li><li><strong>Fully sandboxed environments</strong> — if the agent runs in a container with no network and no persistent state, the attack surface is already constrained.</li></ul>
 <h2>What I Learned</h2>
-
 <p>The hardest part wasn't building the scanners. It was accepting that my existing security instincts — honed over years of traditional application security — were almost useless for agent-specific vulnerabilities. The attack surface is different. The kill chain is different. The tools need to be different.</p>
-
 <p>Start with Layer 1 (agent scanning in CI). Add layers as your deployment matures. The full stack is aspirational — but Layer 1 alone would have caught my <code>eval()</code> mistake.</p>
-
 <p><strong>The tools:</strong> <a href="https://github.com/phoenix-assistant/agent-security-scanner">agent-security-scanner</a> | <a href="https://github.com/phoenix-assistant/ai-vulnerability-scanner-oss">ai-vulnerability-scanner-oss</a> | <a href="https://github.com/phoenix-assistant/ai-agent-security-testing">ai-agent-security-testing</a> | <a href="https://github.com/phoenix-assistant/local-ai-pentest-suite">local-ai-pentest-suite</a> | <a href="https://github.com/phoenix-assistant/shadow-ai-detector">shadow-ai-detector</a></p>
-
-<p>---</p>
-
+<hr>
 <p><em>Tags: AI Security, Penetration Testing, Open Source, DevSecOps, Agent Security</em></p>
 </body>
 </html>
