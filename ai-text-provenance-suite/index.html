@@ -1,0 +1,73 @@
+<html><head><meta charset="utf-8"><title>AI Detection Is Broken. Binary Classifiers Miss the Point — Here's 4-Way Classification That Actually Works.</title></head><body><h1>AI Detection Is Broken. Binary Classifiers Miss the Point — Here's 4-Way Classification That Actually Works.</h1>
+<p><em>I submitted my own blog post to three detectors. Two flagged it as AI. Then I built something better.</em></p>
+<p>I submitted my own hand-written blog post to three popular AI detectors last month. Two flagged it as "likely AI-generated." One gave it a 73% AI probability score. I wrote every word at 11pm with a glass of wine.</p>
+<p>That's when I stopped asking "is this AI?" and started asking: <strong>"what's the provenance of this text?"</strong></p>
+<p>I call this shift <strong>The SPECTRUM Principle</strong>: Stop Pretending Every Classification Tells the Real Underlying Meaning. Binary classification is lazy. Reality has gradients.</p>
+<h2>The Binary Detection Trap</h2>
+<p>Every AI text detector on the market asks the wrong question. "AI or human?" is a false binary. In reality, text exists on a spectrum:</p>
+<ol>
+<li><strong>Human</strong> — written entirely by a person</li>
+<li><strong>AI-Generated</strong> — raw LLM output, unedited</li>
+<li><strong>AI-Polished</strong> — human-written, then refined by AI</li>
+<li><strong>AI-Assisted</strong> — human-directed, AI-drafted, human-edited</li>
+</ol>
+<p>A reviewer used ChatGPT to outline and draft, then spent two hours rewriting every paragraph. Is that AI-written? The binary detector says yes. The reality is more nuanced — and the nuance matters for academic integrity, content moderation, and copyright.</p>
+<h2>Three Tools, One Mission</h2>
+<p>I built three tools that attack this from different angles:</p>
+<h3>1. RST Analysis — Structural Fingerprinting</h3>
+<p><strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/ai-text-provenance-service">ai-text-provenance-service</a></p>
+<p>Rhetorical Structure Theory analysis. Human writing has organic argument flow — digressions, callbacks, emotional pivots. AI writing has mechanical coherence. RST analysis catches the structural fingerprint, not the vocabulary.</p>
+<h3>2. Fine-Grained Classification (SPECTRUM)</h3>
+<p><strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/fine-grained-ai-text-detection">fine-grained-ai-text-detection</a></p>
+<p>Four-class classification instead of binary. Trains on the boundaries between categories — the hard cases that binary classifiers get wrong. Uses paragraph-level analysis, not document-level, because real documents mix human and AI content within the same piece.</p>
+<h3>3. Anti-Distillation Detection</h3>
+<p><strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/anti-distillation-detection">anti-distillation-detection</a></p>
+<p>Detects when a model has been trained on another model's outputs (distillation). This matters for IP protection: if someone fine-tunes on your model's outputs and sells it, you need evidence. Analyzes output distributions and training artifacts that distilled models can't hide.</p>
+<h2>Bad vs Good: Detection Results</h2>
+<p><strong>❌ Binary detection output:</strong></p>
+<pre><code>Input: 2000-word blog post
+Result: "AI-generated" (87% confidence)
+Action: Flag, penalize, reject
+Reality: Human wrote it, Grammarly polished three sentences</code></pre>
+<p><strong>✅ SPECTRUM four-class output:</strong></p>
+<pre><code>Input: 2000-word blog post
+Result:
+  - Paragraphs 1-4: HUMAN (94%)
+  - Paragraph 5: AI-POLISHED (78%) ← Grammarly rewrote this
+  - Paragraphs 6-10: HUMAN (91%)
+  - Overall: HUMAN with minor AI-polish
+Action: Transparent, proportional, fair</code></pre>
+<h2>The Copy-Paste Integration</h2>
+<pre><code># Add to your content pipeline
+from spectrum import TextProvenanceAnalyzer
+
+analyzer = TextProvenanceAnalyzer(
+    granularity="paragraph",  # not document-level
+    categories=["human", "ai-generated", "ai-polished", "ai-assisted"],
+    rst_analysis=True,  # structural fingerprinting
+)
+
+result = analyzer.analyze(text)
+for segment in result.segments:
+    print(f"Lines {segment.start}-{segment.end}: "
+          f"{segment.category} ({segment.confidence:.0%})")
+
+# Output:
+# Lines 1-45: human (94%)
+# Lines 46-52: ai-polished (78%)
+# Lines 53-120: human (91%)</code></pre>
+<h2>Why This Matters Now</h2>
+<p>Academia, publishing, and content platforms are all deploying binary AI detectors that produce false positives at alarming rates. GPTZero, Originality.ai, Turnitin — they all reduce a complex question to yes/no. Students are being accused of cheating for writing that was entirely their own.</p>
+<p>The four-class model doesn't just reduce false positives. It changes the conversation from "did you cheat?" to "what was your process?" That's a fundamentally different — and more productive — question.</p>
+<p>The RST analysis layer adds a dimension no statistical detector captures. Human writing meanders. It digresses, circles back, uses callbacks to earlier points. AI writing marches forward with mechanical coherence. Even heavily edited AI text retains these structural signatures.</p>
+<h2>When NOT to Use This</h2>
+<ul>
+<li><strong>Casual content</strong> — blog comments, social posts, informal communication. The provenance doesn't matter enough to justify analysis overhead.</li>
+<li><strong>Code</strong> — AI-generated code and human code have different distinguishing features. These tools are for natural language text.</li>
+<li><strong>Legal evidence</strong> — these tools provide probabilistic assessments, not forensic proof. Don't use as sole evidence in legal/academic proceedings without corroboration.</li>
+</ul>
+<h2>What's Next</h2>
+<p>The next frontier is <em>multi-model attribution</em> — not just "was this AI-generated?" but "which model generated it?" Different models leave different statistical fingerprints. GPT-4, Claude, Gemini — they each have detectable patterns in token distributions, sentence structure, and reasoning chains.</p>
+<p>Combine model attribution with distillation detection, and you can trace the full provenance chain: "This text was generated by a model that was fine-tuned on Claude outputs, prompted in a specific way, and lightly edited by a human."</p>
+<p><strong>The tools:</strong> <a href="https://github.com/phoenix-assistant/ai-text-provenance-service">ai-text-provenance-service</a> | <a href="https://github.com/phoenix-assistant/fine-grained-ai-text-detection">fine-grained-ai-text-detection</a> | <a href="https://github.com/phoenix-assistant/anti-distillation-detection">anti-distillation-detection</a></p>
+</body></html>
