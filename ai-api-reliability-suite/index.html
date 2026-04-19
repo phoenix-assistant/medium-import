@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>My AI API Started Lying to Me. It Took 3 Weeks to Notice.</title>
+</head>
+<body>
+<h1>My AI API Started Lying to Me. It Took 3 Weeks to Notice.</h1>
 <p><em>Silent throttling, degraded responses, and single-provider risk — the AI reliability crisis nobody's measuring.</em></p>
 
 <p>Three weeks. That's how long my production app ran on degraded AI responses before I noticed. The API returned 200 OK every time. Latency looked normal. But the <em>quality</em> had quietly dropped — shorter responses, less reasoning, more hallucinations. My provider had silently throttled my tier, and nothing in my monitoring stack caught it.</p>
@@ -15,7 +23,7 @@
 
 <p>The detector establishes baselines and alerts on quality drift, not just availability. It runs canary prompts with known-good expected outputs and compares response characteristics against your baseline window. When drift exceeds your threshold, you know before users complain.</p>
 
-<p><em>[Code: # What silent throttling looks like in your logs
+<pre><code># What silent throttling looks like in your logs
 # Week 1 baseline:
 #   avg_response_length: 847 tokens
 #   avg_reasoning_depth: 3.2 steps
@@ -25,7 +33,7 @@
 #   avg_response_length: 312 tokens  # ↓ 63%
 #   avg_reasoning_depth: 1.1 steps   # ↓ 66%
 #   hallucination_rate: 14.7%        # ↑ 600%
-#   http_status: 200 OK              # ← "everything's fine"]</em></p></p>
+#   http_status: 200 OK              # ← "everything's fine"</code></pre></p>
 
 <h3>2. SLA Verification (Trust But Verify)</h3>
 <strong>Tool:</strong> [ai-vendor-sla-monitor](https://github.com/phoenix-assistant/ai-vendor-sla-monitor)
@@ -42,15 +50,15 @@
 <h2>Bad vs Good: AI Monitoring</h2>
 
 <p><strong>❌ Traditional monitoring (what most teams have):</strong>
-<p><em>[Code: health_check:
+<pre><code>health_check:
   endpoint: https://api.openai.com/v1/chat/completions
   method: HEAD
   expected_status: 200
   interval: 60s
-  # Result: "API is up!" (while silently serving garbage)]</em></p></p>
+  # Result: "API is up!" (while silently serving garbage)</code></pre></p>
 
 <p><strong>✅ AI-aware monitoring (what you actually need):</strong>
-<p><em>[Code: ai_health_check:
+<pre><code>ai_health_check:
   endpoint: https://api.openai.com/v1/chat/completions
   method: POST
   test_prompt: "Explain TCP handshake in exactly 3 steps"
@@ -60,11 +68,11 @@
     latency_p99: {max: 2000ms}
     model_match: "gpt-4"  # verify they didn't swap models
   baseline_drift: 15%
-  interval: 300s]</em></p></p>
+  interval: 300s</code></pre></p>
 
 <h2>The Copy-Paste Config</h2>
 
-<p><em>[Code: # ai-reliability.config.yaml
+<pre><code># ai-reliability.config.yaml
 monitoring:
   throttle_detection:
     baseline_window: 7d
@@ -78,17 +86,17 @@ monitoring:
   
   supply_chain:
     risk_dimensions: [availability, concentration, geopolitical]
-    single_provider_alert: true]</em></p>
+    single_provider_alert: true</code></pre>
 
 <h2>The Reliability Scorecard</h2>
 
 <p>Rate your AI infrastructure honestly:</p>
 
-<p><em>[Code: <h2>AI Reliability Assessment</h2>
+<pre><code><h2>AI Reliability Assessment</h2>
 <ul><li>[ ] You monitor response QUALITY, not just status codes</li><li>[ ] You'd know within 1 hour if your provider silently throttled you</li><li>[ ] You verify SLA compliance with functional tests, not just pings</li><li>[ ] You have a failover provider configured and tested</li><li>[ ] You track token costs with alerting on anomalies</li><li>[ ] You know your single-provider concentration risk</li></ul>
 0-1 checked = You're flying blind
 2-3 checked = Basic coverage (add throttle detection)
-4-6 checked = Production-ready AI ops]</em></p>
+4-6 checked = Production-ready AI ops</code></pre>
 
 <h2>When NOT to Use This</h2>
 <ul><li><strong>Hobby projects</strong> — if degraded responses don't cost money, monitoring overhead isn't worth it.</li><li><strong>Fixed-model deployments</strong> — if you run local models with no external dependencies, supply chain monitoring doesn't apply.</li><li><strong>Low-volume usage</strong> — if you make <100 API calls/day, statistical baselines won't be reliable enough for drift detection.</li></ul>
@@ -103,3 +111,5 @@ monitoring:
 <p>---</p>
 
 <p><em>Tags: AI Infrastructure, Reliability, DevOps, Monitoring, SRE</em></p>
+</body>
+</html>

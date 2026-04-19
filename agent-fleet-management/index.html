@@ -1,7 +1,11 @@
-<p>![Hero Image](../../images/agent-fleet-management/hero.png)</p>
-
-<p># I Had 14 AI Agents Running. Nobody Knew What They Were Doing. 4 Silently Died.</p>
-
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>I Had 14 AI Agents Running. Nobody Knew What They Were Doing. 4 Silently Died.</title>
+</head>
+<body>
+<h1>I Had 14 AI Agents Running. Nobody Knew What They Were Doing. 4 Silently Died.</h1>
 <p><em>Your agent fleet has no fleet manager. Here's the control plane I built.</em></p>
 
 <p>Three months ago, I got paged at 2 AM because our billing agent had been retry-looping for six hours, burning $400 in API calls. Nobody noticed because nobody was watching it. Same month, I kicked off 12 coding agents to parallelize a refactoring job — 4 silently crashed with no alerts, no recovery, no reassignment.</p>
@@ -30,7 +34,7 @@
 
 <p>UAMI (<strong>Unified Agent Metrics Interface</strong>) normalizes metrics from every platform into a common schema. Three rules: common schema, provenance tags, query-time aggregation.</p>
 
-<p><em>[Code: # What UAMI gives you: one query, all agents
+<pre><code># What UAMI gives you: one query, all agents
 agent_metrics:
   billing-agent:
     tokens_24h: 42,300
@@ -41,7 +45,7 @@ agent_metrics:
     tokens_24h: 128,900
     cost_24h: $9.83
     errors: 14  # ← this was invisible before
-    avg_latency: 2.8s]</em></p>
+    avg_latency: 2.8s</code></pre>
 
 <h3>2. Fleet Orchestration</h3>
 
@@ -64,13 +68,13 @@ agent_metrics:
 <h2>Bad vs Good</h2>
 
 <p><strong>❌ Agent fleet management today:</strong>
-<p><em>[Code: nohup python billing_agent.py &      # hope nobody kills it
+<pre><code>nohup python billing_agent.py &      # hope nobody kills it
 nohup python support_agent.py &      # hope it doesn't burn money
 # 14 tabs of different monitoring tools
-# "how many tokens yesterday?" → ¯\_(ツ)_/¯]</em></p></p>
+# "how many tokens yesterday?" → ¯\_(ツ)_/¯</code></pre></p>
 
 <p><strong>✅ With the full control plane:</strong>
-<p><em>[Code: agents:
+<pre><code>agents:
   billing:
     replicas: 2
     health_check: /status
@@ -79,17 +83,17 @@ nohup python support_agent.py &      # hope it doesn't burn money
   support:
     replicas: 3
     auto_scale: {min: 1, max: 5, metric: queue_depth}
-    safety: {data_exfiltration: block, scope_escalation: alert}]</em></p></p>
+    safety: {data_exfiltration: block, scope_escalation: alert}</code></pre></p>
 
 <h2>The Copy-Paste Diagnostic</h2>
 
 <p>Run this against your agent fleet to see if you need infrastructure:</p>
 
-<p><em>[Code: <h2>Agent Fleet Health Check</h2>
+<pre><code><h2>Agent Fleet Health Check</h2>
 <ul><li>[ ] Can you answer "total token spend yesterday" in under 60 seconds?</li><li>[ ] If an agent crashes at 3 AM, does work auto-reassign?</li><li>[ ] Can you add a new agent without editing other agents' config?</li><li>[ ] Do you have a single dashboard for all agent metrics?</li><li>[ ] Can you kill all agents with one command?</li><li>[ ] Have you tested what happens when agents collude?</li></ul>
 Score: 0-2 checked = ad-hoc (fix now)
         3-4 checked = emerging (add orchestration)
-        5-6 checked = mature (optimize)]</em></p>
+        5-6 checked = mature (optimize)</code></pre>
 
 <h2>When NOT to Use This</h2>
 
@@ -99,3 +103,5 @@ Score: 0-2 checked = ad-hoc (fix now)
 <p>---</p>
 
 <p><em>Tags: AI Agents, Infrastructure, DevOps, Observability, Multi-Agent Systems</em></p>
+</body>
+</html>

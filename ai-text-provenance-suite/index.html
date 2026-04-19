@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>AI Detection Is Broken. Binary Classifiers Miss the Point — Here's 4-Way Classification That Actually Works.</title>
+</head>
+<body>
+<h1>AI Detection Is Broken. Binary Classifiers Miss the Point — Here's 4-Way Classification That Actually Works.</h1>
 <p><em>I submitted my own blog post to three detectors. Two flagged it as AI. Then I built something better.</em></p>
 
 <p>I submitted my own hand-written blog post to three popular AI detectors last month. Two flagged it as "likely AI-generated." One gave it a 73% AI probability score. I wrote every word at 11pm with a glass of wine.</p>
@@ -10,12 +18,8 @@
 
 <p>Every AI text detector on the market asks the wrong question. "AI or human?" is a false binary. In reality, text exists on a spectrum:</p>
 
-<p>1. <strong>Human</strong> — written entirely by a person
-2. <strong>AI-Generated</strong> — raw LLM output, unedited
-3. <strong>AI-Polished</strong> — human-written, then refined by AI
-4. <strong>AI-Assisted</strong> — human-directed, AI-drafted, human-edited</p>
-
-<p>A reviewer used ChatGPT to outline and draft, then spent two hours rewriting every paragraph. Is that AI-written? The binary detector says yes. The reality is more nuanced — and the nuance matters for academic integrity, content moderation, and copyright.</p>
+<ol><li><strong>Human</strong> — written entirely by a person</li><li><strong>AI-Generated</strong> — raw LLM output, unedited</li><li><strong>AI-Polished</strong> — human-written, then refined by AI</li><li><strong>AI-Assisted</strong> — human-directed, AI-drafted, human-edited</li></ol>
+A reviewer used ChatGPT to outline and draft, then spent two hours rewriting every paragraph. Is that AI-written? The binary detector says yes. The reality is more nuanced — and the nuance matters for academic integrity, content moderation, and copyright.
 
 <h2>Three Tools, One Mission</h2>
 
@@ -39,23 +43,23 @@
 <h2>Bad vs Good: Detection Results</h2>
 
 <p><strong>❌ Binary detection output:</strong>
-<p><em>[Code: Input: 2000-word blog post
+<pre><code>Input: 2000-word blog post
 Result: "AI-generated" (87% confidence)
 Action: Flag, penalize, reject
-Reality: Human wrote it, Grammarly polished three sentences]</em></p></p>
+Reality: Human wrote it, Grammarly polished three sentences</code></pre></p>
 
 <p><strong>✅ SPECTRUM four-class output:</strong>
-<p><em>[Code: Input: 2000-word blog post
+<pre><code>Input: 2000-word blog post
 Result:
   - Paragraphs 1-4: HUMAN (94%)
   - Paragraph 5: AI-POLISHED (78%) ← Grammarly rewrote this
   - Paragraphs 6-10: HUMAN (91%)
   - Overall: HUMAN with minor AI-polish
-Action: Transparent, proportional, fair]</em></p></p>
+Action: Transparent, proportional, fair</code></pre></p>
 
 <h2>The Copy-Paste Integration</h2>
 
-<p><em>[Code: # Add to your content pipeline
+<pre><code># Add to your content pipeline
 from spectrum import TextProvenanceAnalyzer
 
 <p>analyzer = TextProvenanceAnalyzer(
@@ -72,7 +76,7 @@ for segment in result.segments:
 <p># Output:
 # Lines 1-45: human (94%)
 # Lines 46-52: ai-polished (78%)
-# Lines 53-120: human (91%)]</em></p></p>
+# Lines 53-120: human (91%)</code></pre></p>
 
 <h2>Why This Matters Now</h2>
 
@@ -96,3 +100,5 @@ for segment in result.segments:
 <p>---</p>
 
 <p><em>Tags: AI Detection, NLP, Content Moderation, Text Classification, Machine Learning</em></p>
+</body>
+</html>

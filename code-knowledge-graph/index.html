@@ -1,7 +1,11 @@
-<p>![Hero Image](../../images/code-knowledge-graph/hero.png)</p>
-
-<p># Your RAG Pipeline Doesn't Understand Code Structure. Mine Uses a Knowledge Graph.</p>
-
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Your RAG Pipeline Doesn't Understand Code Structure. Mine Uses a Knowledge Graph.</title>
+</head>
+<body>
+<h1>Your RAG Pipeline Doesn't Understand Code Structure. Mine Uses a Knowledge Graph.</h1>
 <p><em>Why vector search fails on codebases, and how graph-based RAG actually works.</em></p>
 
 <p>I asked my RAG system "how does authentication work in this codebase?" It returned five code snippets — all technically relevant, none showing the actual flow. It found the login function, the token validator, and the middleware. But it couldn't connect them into a coherent answer because it didn't understand that they form a pipeline.</p>
@@ -12,7 +16,7 @@
 
 <p>Consider a typical authentication flow across three files:</p>
 
-<p><em>[Code: # auth/login.py
+<pre><code># auth/login.py
 def login(username, password):
     user = UserStore.lookup(username)
     if verify_password(password, user.hash):
@@ -30,7 +34,7 @@ def require_auth(handler):
         token = request.headers.get("Authorization")
         user = TokenService.validate_token(token)
         return handler(request, user=user)
-    return wrapper]</em></p></p>
+    return wrapper</code></pre></p>
 
 <p>A vector search for "how does authentication work" might return all three snippets. But it can't tell you that <code>login()</code> calls <code>TokenService.create_token()</code>, which produces a JWT that <code>require_auth()</code> later validates via <code>TokenService.validate_token()</code>. The flow — the actual answer — lives in the relationships between these functions, not in the functions themselves.</p>
 
@@ -44,26 +48,20 @@ def require_auth(handler):
 
 <p><strong>[graph-rag-private-codebases](https://github.com/phoenix-assistant/graph-rag-private-codebases)</strong> queries that graph with graph-aware RAG. When you ask "how does authentication work," it doesn't just find relevant code — it traverses the graph to reconstruct the flow. It starts at <code>login()</code>, follows the call to <code>create_token()</code>, finds every consumer of tokens, and returns a connected subgraph that tells the complete story.</p>
 
-<p><em>[Code: # Build the knowledge graph (runs locally)
+<pre><code># Build the knowledge graph (runs locally)
 code-kg build ./my-project --languages python,typescript
 
 <p># Query with graph-aware RAG
 code-kg query "how does authentication work?"
 # Returns: connected subgraph with call chain,
-# not isolated snippets]</em></p></p>
+# not isolated snippets</code></pre></p>
 
 <h2>What the Graph Captures</h2>
 
 <p>The knowledge graph indexes six relationship types that embeddings miss entirely:</p>
 
-<p>1. <strong>Call graphs</strong> — which functions call which other functions, including cross-file and cross-module calls.
-2. <strong>Import chains</strong> — module dependency trees, including transitive dependencies.
-3. <strong>Type hierarchies</strong> — class inheritance, interface implementations, type aliases.
-4. <strong>Data flow</strong> — how data moves through the system, from input to storage to output.
-5. <strong>Error propagation</strong> — which functions throw exceptions and where they're caught.
-6. <strong>Configuration dependencies</strong> — which code paths depend on environment variables, feature flags, or config files.</p>
-
-<p>When you query "what happens when a user uploads a file," the graph traverses from the upload endpoint through validation, storage, thumbnail generation, and notification — returning the complete pipeline, not fragments.</p>
+<ol><li><strong>Call graphs</strong> — which functions call which other functions, including cross-file and cross-module calls.</li><li><strong>Import chains</strong> — module dependency trees, including transitive dependencies.</li><li><strong>Type hierarchies</strong> — class inheritance, interface implementations, type aliases.</li><li><strong>Data flow</strong> — how data moves through the system, from input to storage to output.</li><li><strong>Error propagation</strong> — which functions throw exceptions and where they're caught.</li><li><strong>Configuration dependencies</strong> — which code paths depend on environment variables, feature flags, or config files.</li></ol>
+When you query "what happens when a user uploads a file," the graph traverses from the upload endpoint through validation, storage, thumbnail generation, and notification — returning the complete pipeline, not fragments.
 
 <h2>The Privacy Argument</h2>
 
@@ -77,11 +75,8 @@ code-kg query "how does authentication work?"
 
 <p>Graph RAG doesn't replace vector search — it augments it. The system uses a hybrid retrieval strategy:</p>
 
-<p>1. <strong>Vector search</strong> identifies candidate nodes — functions and classes that are semantically similar to the query.
-2. <strong>Graph traversal</strong> expands from those candidates — following call chains, inheritance trees, and data flow to find the connected context.
-3. <strong>Ranking</strong> combines semantic similarity with graph centrality — nodes that are both relevant AND well-connected rank highest.</p>
-
-<p>This hybrid approach consistently outperforms pure vector search on structural queries ("how does X work," "what calls Y," "what happens when Z fails") while maintaining competitive performance on simple lookup queries ("find the function that validates emails").</p>
+<ol><li><strong>Vector search</strong> identifies candidate nodes — functions and classes that are semantically similar to the query.</li><li><strong>Graph traversal</strong> expands from those candidates — following call chains, inheritance trees, and data flow to find the connected context.</li><li><strong>Ranking</strong> combines semantic similarity with graph centrality — nodes that are both relevant AND well-connected rank highest.</li></ol>
+This hybrid approach consistently outperforms pure vector search on structural queries ("how does X work," "what calls Y," "what happens when Z fails") while maintaining competitive performance on simple lookup queries ("find the function that validates emails").
 
 <h2>When NOT to Use This</h2>
 
@@ -97,3 +92,5 @@ code-kg query "how does authentication work?"
 <p>---</p>
 
 <p><em>Tags: RAG, Knowledge Graphs, Developer Tools, Code Understanding, AI</em></p>
+</body>
+</html>

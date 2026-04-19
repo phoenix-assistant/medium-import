@@ -1,7 +1,11 @@
-<p>![Hero Image](../../images/agent-identity-discovery/hero.png)</p>
-
-<p># Your AI Agents Can't Find Each Other. I Built DNS for Agents.</p>
-
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Your AI Agents Can't Find Each Other. I Built DNS for Agents.</title>
+</head>
+<body>
+<h1>Your AI Agents Can't Find Each Other. I Built DNS for Agents.</h1>
 <p><em>Two tools for the same unsolved problem: agent discovery and identity in multi-agent systems.</em></p>
 
 <h2>The Problem Nobody Talks About</h2>
@@ -20,13 +24,10 @@
 
 <p>Agent systems break these assumptions in three ways:</p>
 
-<p>1. <strong>Agents are autonomous.</strong> They spin up, shut down, and migrate without central coordination. A service mesh assumes stable topology. Agents assume nothing.</p>
-
-<p>2. <strong>Capabilities matter more than endpoints.</strong> When Agent A needs "someone who can review Python code," it shouldn't care whether that's Agent B on port 4200 or Agent F on a different machine entirely. Discovery should be capability-based, not address-based.</p>
-
-<p>3. <strong>Trust is unverified.</strong> When Agent B responds, how does Agent A know it's actually Agent B? In most current setups, it doesn't. It trusts the response because it came from the expected URL — the same security model as 1990s email.</p>
-
-<p>MIT's 2026 agent infrastructure report called identity "the most underbuilt layer in the multi-agent ecosystem." They're right. We're building increasingly sophisticated agent networks on a foundation of implicit trust and brittle addressing.</p>
+<ol><li><strong>Agents are autonomous.</strong> They spin up, shut down, and migrate without central coordination. A service mesh assumes stable topology. Agents assume nothing.</li></ol>
+<ol><li><strong>Capabilities matter more than endpoints.</strong> When Agent A needs "someone who can review Python code," it shouldn't care whether that's Agent B on port 4200 or Agent F on a different machine entirely. Discovery should be capability-based, not address-based.</li></ol>
+<ol><li><strong>Trust is unverified.</strong> When Agent B responds, how does Agent A know it's actually Agent B? In most current setups, it doesn't. It trusts the response because it came from the expected URL — the same security model as 1990s email.</li></ol>
+MIT's 2026 agent infrastructure report called identity "the most underbuilt layer in the multi-agent ecosystem." They're right. We're building increasingly sophisticated agent networks on a foundation of implicit trust and brittle addressing.
 
 <h2>What I Built: DNS for Agents</h2>
 
@@ -38,7 +39,7 @@
 
 <p>Together, they form a complete agent addressing system:</p>
 
-<p><em>[Code: # Register an agent with capabilities
+<pre><code># Register an agent with capabilities
 curl -X POST http://localhost:3900/register \
   -H "Content-Type: application/json" \
   -d '{
@@ -51,37 +52,34 @@ curl -X POST http://localhost:3900/register \
 
 <p># Discover by capability (not by address)
 curl http://localhost:3900/discover?capability=python-review
-# Returns: verified agent endpoint + trust chain]</em></p></p>
+# Returns: verified agent endpoint + trust chain</code></pre></p>
 
 <h3>Bad vs. Good: Agent Communication</h3>
 
 <p><strong>Without identity registry:</strong>
-<p><em>[Code: # config.yaml — hardcoded, brittle, unverified
+<pre><code># config.yaml — hardcoded, brittle, unverified
 agents:
   code_reviewer: http://localhost:4200
   security_scanner: http://localhost:4300
   test_runner: http://localhost:4400
   # Move any port → everything breaks
-  # No verification that responses are authentic]</em></p></p>
+  # No verification that responses are authentic</code></pre></p>
 
 <p><strong>With identity registry:</strong>
-<p><em>[Code: # config.yaml — capability-based, verified
+<pre><code># config.yaml — capability-based, verified
 discovery:
   registry: http://localhost:3900
   require_verification: true
   # Agents discovered by capability
   # Trust chains verified automatically
-  # Health-aware routing built in]</em></p></p>
+  # Health-aware routing built in</code></pre></p>
 
 <h2>The Trust Chain Model</h2>
 
 <p>The identity system uses a three-tier trust model:</p>
 
-<p>1. <strong>Root of Trust</strong> — your organization's signing key. You control who can register.
-2. <strong>Agent Identity</strong> — each agent holds a DID signed by the root. Verifiable without calling home.
-3. <strong>Capability Attestation</strong> — capabilities are signed claims, not self-reported labels. An agent says "I can review Python" only if its attestation chain validates.</p>
-
-<p>This plugs into existing infrastructure. If you already use OAuth or mTLS, the registry integrates as an additional verification layer rather than replacing your auth stack.</p>
+<ol><li><strong>Root of Trust</strong> — your organization's signing key. You control who can register.</li><li><strong>Agent Identity</strong> — each agent holds a DID signed by the root. Verifiable without calling home.</li><li><strong>Capability Attestation</strong> — capabilities are signed claims, not self-reported labels. An agent says "I can review Python" only if its attestation chain validates.</li></ol>
+This plugs into existing infrastructure. If you already use OAuth or mTLS, the registry integrates as an additional verification layer rather than replacing your auth stack.
 
 <h2>The Implementation Checklist</h2>
 
@@ -106,3 +104,5 @@ If you checked three or more, you have a discovery problem. If you checked the t
 <p>---</p>
 
 <p><em>Tags: AI Agents, Multi-Agent Systems, Service Discovery, Infrastructure, Open Source</em></p>
+</body>
+</html>

@@ -1,7 +1,11 @@
-<p>![Hero Image](../../images/ai-security-arsenal/hero.png)</p>
-
-<p># I Shipped an AI Agent With eval() in the Tool Chain. Then I Built 5 Security Scanners. Here's the Arsenal.</p>
-
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>I Shipped an AI Agent With eval() in the Tool Chain. Then I Built 5 Security Scanners. Here's the Arsenal.</title>
+</head>
+<body>
+<h1>I Shipped an AI Agent With eval() in the Tool Chain. Then I Built 5 Security Scanners. Here's the Arsenal.</h1>
 <p><em>Traditional security tools can't see AI vulnerabilities. I built the tools that can.</em></p>
 
 <p>Three weeks ago I reviewed a PR for an AI agent. Clean code. Good tests. LangChain tools looked reasonable. I approved it.</p>
@@ -22,13 +26,13 @@
 
 <p>Static analysis for agent-specific vulnerabilities. Traditional linters catch <code>eval()</code> — this catches <code>eval()</code> fed by LLM output from user-controlled prompts. The attack chain is what matters.</p>
 
-<p><em>[Code: # .agent-security.yml — drop in your repo
+<pre><code># .agent-security.yml — drop in your repo
 rules:
   prompt_injection:    severity: critical
   tool_chain_escalation: severity: high
   over_permissioned:   severity: high
   missing_sandbox:     severity: critical
-  data_exfiltration:   severity: critical]</em></p>
+  data_exfiltration:   severity: critical</code></pre>
 
 <h3>Layer 2: AI-Powered Vulnerability Discovery (LARA)</h3>
 
@@ -61,25 +65,25 @@ rules:
 <h2>Bad vs Good: The Full Stack</h2>
 
 <p><strong>❌ Most teams' AI security:</strong>
-<p><em>[Code: ✓ npm audit (dependency CVEs only)
+<pre><code>✓ npm audit (dependency CVEs only)
 ✓ ESLint (style, not security)
 ✗ Agent-specific scanning
 ✗ AI-powered code analysis
 ✗ Red team testing
 ✗ Air-gapped pentesting
-✗ Shadow AI detection]</em></p></p>
+✗ Shadow AI detection</code></pre></p>
 
 <p><strong>✅ The full AI security arsenal:</strong>
-<p><em>[Code: Layer 1: agent-security-scanner  → CI/CD, every PR
+<pre><code>Layer 1: agent-security-scanner  → CI/CD, every PR
 Layer 2: ai-vuln-scanner         → Weekly deep scan
 Layer 3: ai-agent-security-test  → Pre-release red team
 Layer 4: local-ai-pentest-suite  → Client engagements
-Layer 5: shadow-ai-detector      → Monthly org scan]</em></p></p>
+Layer 5: shadow-ai-detector      → Monthly org scan</code></pre></p>
 
 <h2>The Copy-Paste Checklist</h2>
 
-<p><em>[Code: <h2>AI Security Pre-Ship Checklist</h2>
-<ul><li>[ ] Agent scanner: 0 critical, 0 high findings</li><li>[ ] Vuln scanner: local LLM reasoning pass clean</li><li>[ ] Red team: prompt injection suite passed</li><li>[ ] Red team: data exfiltration probes blocked</li><li>[ ] Red team: privilege escalation denied</li><li>[ ] Shadow AI: no unauthorized tools in team</li><li>[ ] All scans ran locally (no code to cloud)]</em></p></li></ul>
+<pre><code><h2>AI Security Pre-Ship Checklist</h2>
+<ul><li>[ ] Agent scanner: 0 critical, 0 high findings</li><li>[ ] Vuln scanner: local LLM reasoning pass clean</li><li>[ ] Red team: prompt injection suite passed</li><li>[ ] Red team: data exfiltration probes blocked</li><li>[ ] Red team: privilege escalation denied</li><li>[ ] Shadow AI: no unauthorized tools in team</li><li>[ ] All scans ran locally (no code to cloud)</code></pre></li></ul>
 <h2>When NOT to Use This</h2>
 
 <ul><li><strong>Prototypes/hackathons</strong> — security scanning slows iteration. Ship fast, scan before production.</li><li><strong>Non-agentic AI</strong> — if your AI is a simple API call with no tools, Layers 1 and 3 add overhead without value. Layer 2 still applies.</li><li><strong>Fully sandboxed environments</strong> — if the agent runs in a container with no network and no persistent state, the attack surface is already constrained.</li></ul>
@@ -94,3 +98,5 @@ Layer 5: shadow-ai-detector      → Monthly org scan]</em></p></p>
 <p>---</p>
 
 <p><em>Tags: AI Security, Penetration Testing, Open Source, DevSecOps, Agent Security</em></p>
+</body>
+</html>
