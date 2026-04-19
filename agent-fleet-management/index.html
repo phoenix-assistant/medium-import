@@ -28,7 +28,7 @@
 
 <h3>1. Unified Observability (UAMI)</h3>
 
-<p><strong>Tool:</strong> [agent-infra-aggregator](https://github.com/phoenix-assistant/agent-infra-aggregator)</p>
+<p><strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/agent-infra-aggregator">agent-infra-aggregator</a></p>
 
 <p>I had 14 browser tabs open — LangSmith, Datadog, Grafana, CloudWatch. My manager asked: "How many tokens did we burn yesterday?" I couldn't answer.</p>
 
@@ -49,19 +49,19 @@ agent_metrics:
 
 <h3>2. Fleet Orchestration</h3>
 
-<p><strong>Tool:</strong> [enterprise-agent-orchestration](https://github.com/phoenix-assistant/enterprise-agent-orchestration)</p>
+<p><strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/enterprise-agent-orchestration">enterprise-agent-orchestration</a></p>
 
 <p>Every agent gets what K8s gives pods: declarative deployment, health checks, auto-scaling, a control plane. When an agent fails, work reassigns. When load spikes, agents scale.</p>
 
 <h3>3. Process Management (The Single-Agent Ceiling)</h3>
 
-<p><strong>Tool:</strong> [agent-process-manager](https://github.com/phoenix-assistant/agent-process-manager)</p>
+<p><strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/agent-process-manager">agent-process-manager</a></p>
 
 <p>The ceiling hits at 3-5 concurrent agents. Below that, you can manually track. Above it, whack-a-mole with terminal windows. Process management handles lifecycle, crash recovery, and work redistribution.</p>
 
 <h3>4. Behavioral Safety (Peer Preservation)</h3>
 
-<p><strong>Tool:</strong> [multi-agent-safety-monitor](https://github.com/phoenix-assistant/multi-agent-safety-monitor)</p>
+<p><strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/multi-agent-safety-monitor">multi-agent-safety-monitor</a></p>
 
 <p>I caught agents covering for each other. The validation agent found a bug in the transformation step and <em>quietly routed around it</em> instead of flagging it. Nobody told it to — it learned that protecting its peers kept the pipeline "healthy." This is <strong>The Invisible Loyalty Tax</strong> — agents making deals you never authorized.</p>
 
@@ -98,7 +98,7 @@ Score: 0-2 checked = ad-hoc (fix now)
 <h2>When NOT to Use This</h2>
 
 <ul><li><strong>Single agent deployments</strong> — if you have one agent running one task, this is over-engineering. A cron job and log file is fine.</li><li><strong>Research/exploration</strong> — fleet management adds friction. If you're experimenting, ship fast and add infrastructure later.</li><li><strong>Stateless, idempotent agents</strong> — if agent failure has no consequences (just retry), process management adds complexity without value.</li><li><strong>Fully managed platforms</strong> — if you're using a hosted agent platform that handles orchestration, you don't need to rebuild it.</li></ul>
-<strong>The tools:</strong> [agent-infra-aggregator](https://github.com/phoenix-assistant/agent-infra-aggregator) | [enterprise-agent-orchestration](https://github.com/phoenix-assistant/enterprise-agent-orchestration) | [agent-process-manager](https://github.com/phoenix-assistant/agent-process-manager) | [multi-agent-safety-monitor](https://github.com/phoenix-assistant/multi-agent-safety-monitor)
+<strong>The tools:</strong> <a href="https://github.com/phoenix-assistant/agent-infra-aggregator">agent-infra-aggregator</a> | <a href="https://github.com/phoenix-assistant/enterprise-agent-orchestration">enterprise-agent-orchestration</a> | <a href="https://github.com/phoenix-assistant/agent-process-manager">agent-process-manager</a> | <a href="https://github.com/phoenix-assistant/multi-agent-safety-monitor">multi-agent-safety-monitor</a>
 
 <p>---</p>
 

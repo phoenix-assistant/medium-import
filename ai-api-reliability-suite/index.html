@@ -17,7 +17,7 @@
 <p>After months of building monitoring for AI infrastructure, I've identified three distinct failure modes that traditional observability misses. Traditional monitoring checks: is the API up? AI monitoring must check: is the API <em>good</em>?</p>
 
 <h3>1. Silent Throttling (The 200 OK Lie)</h3>
-<strong>Tool:</strong> [ai-throttle-detector](https://github.com/phoenix-assistant/ai-throttle-detector)
+<strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/ai-throttle-detector">ai-throttle-detector</a>
 
 <p>Providers can silently change: thinking tokens (reduce reasoning depth), model routing (send you a smaller model), response length caps, quality tiers. Your API returns 200 OK. Your monitoring says "healthy." Your users get garbage.</p>
 
@@ -36,12 +36,12 @@
 #   http_status: 200 OK              # ← "everything's fine"</code></pre></p>
 
 <h3>2. SLA Verification (Trust But Verify)</h3>
-<strong>Tool:</strong> [ai-vendor-sla-monitor](https://github.com/phoenix-assistant/ai-vendor-sla-monitor)
+<strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/ai-vendor-sla-monitor">ai-vendor-sla-monitor</a>
 
 <p>Your AI vendor promises 99.9% uptime. Are they delivering? Not just HTTP availability — actual functional uptime. Can the API handle your workload at the promised quality?</p>
 
 <h3>3. Supply Chain Resilience (The Single-Provider Trap)</h3>
-<strong>Tool:</strong> [ai-infra-resilience-monitor](https://github.com/phoenix-assistant/ai-infra-resilience-monitor)
+<strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/ai-infra-resilience-monitor">ai-infra-resilience-monitor</a>
 
 <p>One GPU provider, one embedding API, one vector DB — what happens when any goes down? I call this <strong>The AI Supply Chain Matrix</strong> — mapping every dependency against availability, concentration, and geopolitical risk.</p>
 
@@ -106,7 +106,7 @@ monitoring:
 
 <p>That requires real-time quality scoring across providers — which is exactly what the throttle detector's baselines enable.</p>
 
-<p><strong>The tools:</strong> [ai-throttle-detector](https://github.com/phoenix-assistant/ai-throttle-detector) | [ai-vendor-sla-monitor](https://github.com/phoenix-assistant/ai-vendor-sla-monitor) | [ai-infra-resilience-monitor](https://github.com/phoenix-assistant/ai-infra-resilience-monitor)</p>
+<p><strong>The tools:</strong> <a href="https://github.com/phoenix-assistant/ai-throttle-detector">ai-throttle-detector</a> | <a href="https://github.com/phoenix-assistant/ai-vendor-sla-monitor">ai-vendor-sla-monitor</a> | <a href="https://github.com/phoenix-assistant/ai-infra-resilience-monitor">ai-infra-resilience-monitor</a></p>
 
 <p>---</p>
 

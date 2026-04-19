@@ -44,9 +44,9 @@ def require_auth(handler):
 
 <p>I built two tools that solve this by modeling code as a knowledge graph rather than a bag of embeddings.</p>
 
-<p><strong>[local-code-knowledge-graph](https://github.com/phoenix-assistant/local-code-knowledge-graph)</strong> parses your codebase and builds a graph of relationships: function calls, class inheritance, module imports, type references, and data flow. Every entity (function, class, module, variable) becomes a node. Every relationship becomes an edge.</p>
+<p><strong><a href="https://github.com/phoenix-assistant/local-code-knowledge-graph">local-code-knowledge-graph</a></strong> parses your codebase and builds a graph of relationships: function calls, class inheritance, module imports, type references, and data flow. Every entity (function, class, module, variable) becomes a node. Every relationship becomes an edge.</p>
 
-<p><strong>[graph-rag-private-codebases](https://github.com/phoenix-assistant/graph-rag-private-codebases)</strong> queries that graph with graph-aware RAG. When you ask "how does authentication work," it doesn't just find relevant code — it traverses the graph to reconstruct the flow. It starts at <code>login()</code>, follows the call to <code>create_token()</code>, finds every consumer of tokens, and returns a connected subgraph that tells the complete story.</p>
+<p><strong><a href="https://github.com/phoenix-assistant/graph-rag-private-codebases">graph-rag-private-codebases</a></strong> queries that graph with graph-aware RAG. When you ask "how does authentication work," it doesn't just find relevant code — it traverses the graph to reconstruct the flow. It starts at <code>login()</code>, follows the call to <code>create_token()</code>, finds every consumer of tokens, and returns a connected subgraph that tells the complete story.</p>
 
 <pre><code># Build the knowledge graph (runs locally)
 code-kg build ./my-project --languages python,typescript
@@ -87,7 +87,7 @@ This hybrid approach consistently outperforms pure vector search on structural q
 
 <p>Graph-based RAG addresses the understanding problem directly. Instead of asking "generate code that does X," you ask "explain how X currently works in this codebase" — and get an answer that reflects the actual architecture, not a hallucinated guess.</p>
 
-<p><strong>The tools:</strong> [local-code-knowledge-graph](https://github.com/phoenix-assistant/local-code-knowledge-graph) | [graph-rag-private-codebases](https://github.com/phoenix-assistant/graph-rag-private-codebases)</p>
+<p><strong>The tools:</strong> <a href="https://github.com/phoenix-assistant/local-code-knowledge-graph">local-code-knowledge-graph</a> | <a href="https://github.com/phoenix-assistant/graph-rag-private-codebases">graph-rag-private-codebases</a></p>
 
 <p>---</p>
 
