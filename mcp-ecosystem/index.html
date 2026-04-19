@@ -1,40 +1,74 @@
-<html><head><meta charset="utf-8"><title>MCP Isn't Just for Developers. Here's the Ecosystem That's Emerging.</title></head><body><h1>MCP Isn't Just for Developers. Here's the Ecosystem That's Emerging.</h1>
+<p>![Hero Image](../../images/mcp-ecosystem/hero.png)</p>
+
+<p># MCP Isn't Just for Developers. Here's the Ecosystem That's Emerging.</p>
+
 <p><em>A registry, interop standard, and non-dev workflows — the three pieces missing from MCP's story.</em></p>
+
 <p>Everyone knows MCP (Model Context Protocol) as a developer tool. Connect your AI to databases, APIs, file systems. The developer community built hundreds of MCP servers in the first six months, covering everything from GitHub integrations to PostgreSQL queries to Slack messaging.</p>
+
 <p>But after building three MCP tools — a registry, an interop layer, and a non-dev workflow kit — I'm convinced the biggest opportunity isn't developers. It's everyone else.</p>
+
 <h2>The Developer Bubble</h2>
+
 <p>Here's the current state of MCP: a developer writes a server, publishes it to GitHub, maybe posts about it on Reddit. Another developer finds it through word of mouth, forks it, adapts it. The ecosystem grows, but only within the developer bubble.</p>
+
 <p>Meanwhile, the operations team still copies data between Salesforce and Google Sheets manually. The HR team runs onboarding checklists in a Word document. The support team answers the same questions by searching a knowledge base they can't query naturally.</p>
+
 <p>These teams have heard of AI assistants. Some have tried ChatGPT. But the gap between "chat with an AI" and "AI that actually connects to my tools" remains enormous — not because the technology doesn't exist, but because nobody built the bridge.</p>
+
 <p>MCP is that bridge. But three critical pieces are missing.</p>
+
 <h2>Piece 1: MCP Registry — The Discoverability Problem</h2>
-<p><strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/mcp-registry">mcp-registry</a></p>
+
+<p><strong>Tool:</strong> [mcp-registry](https://github.com/phoenix-assistant/mcp-registry)</p>
+
 <p>There are now hundreds of MCP servers scattered across GitHub. Finding the right one for your use case requires knowing exactly what to search for. There's no npm for MCP, no package index, no curated directory with ratings and compatibility information.</p>
+
 <p>The registry solves this by indexing MCP servers with structured metadata: what tools they expose, what platforms they connect to, which AI frameworks they've been tested with, and how active the maintainer is. Think of it as a searchable catalog where you can filter by domain (finance, HR, DevOps), by platform (Slack, Salesforce, Jira), or by capability (read-only, write, bidirectional).</p>
+
 <p>Without discoverability, every team reinvents the wheel. I've seen three separate MCP servers for Notion that do almost the same thing, each with different trade-offs that are impossible to compare without reading all three codebases.</p>
+
 <h2>Piece 2: Skills Interop — The Portability Problem</h2>
-<p><strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/mcp-skills-interop">mcp-skills-interop</a></p>
+
+<p><strong>Tool:</strong> [mcp-skills-interop](https://github.com/phoenix-assistant/mcp-skills-interop)</p>
+
 <p>Here's a frustrating pattern: you build a sophisticated MCP skill for Claude — say, a multi-step workflow that pulls Jira tickets, cross-references them with GitHub PRs, and generates a sprint summary. It works beautifully. Then your team decides to evaluate GPT for cost reasons. Your skill doesn't work. The tool schema is slightly different, the response format varies, the authentication flow isn't compatible.</p>
+
 <p>Skills interop creates a portable skill format that works across Claude, GPT, local models running through Ollama, and any other framework that supports MCP. Write the skill once. Deploy it anywhere. The interop layer handles the translation between frameworks, normalizing tool schemas and response formats.</p>
+
 <p>This matters because organizations rarely commit to a single AI provider forever. Model costs change, capabilities shift, new providers emerge. If every skill is locked to one framework, switching providers means rewriting your entire automation layer — a cost that often prevents teams from migrating even when it makes economic sense.</p>
+
 <h2>Piece 3: Non-Dev Workflows — The Big Opportunity</h2>
-<p><strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/mcp-non-dev-workflows">mcp-non-dev-workflows</a></p>
+
+<p><strong>Tool:</strong> [mcp-non-dev-workflows](https://github.com/phoenix-assistant/mcp-non-dev-workflows)</p>
+
 <p>This is where MCP goes from useful to transformative. Pre-built workflow templates for HR, sales, support, and operations — no coding required.</p>
+
 <p><strong>HR onboarding example:</strong> Connect MCP to your HRIS, Slack, and Google Workspace. New hire triggers an automated flow: create accounts, send welcome messages, schedule orientation meetings, assign training modules, notify the manager. The HR coordinator describes what they need in natural language, and the MCP workflow handles the integrations.</p>
+
 <p><strong>Sales pipeline example:</strong> Connect MCP to Salesforce, email, and calendar. A sales rep asks their AI assistant, "What deals are at risk this week?" The assistant queries Salesforce for stalled opportunities, checks email for unanswered threads, and surfaces calendar gaps where follow-ups could be scheduled.</p>
+
 <p><strong>Support triage example:</strong> Connect MCP to Zendesk, your knowledge base, and Slack. Incoming tickets are automatically categorized, matched against known solutions, and routed to the right team — with a suggested response drafted from the knowledge base.</p>
+
 <p>These aren't hypothetical. Each template ships with connection guides, test data, and fallback handling for when APIs are unavailable. The goal is zero-to-working in under an hour for someone who has never written code.</p>
+
 <h2>The Ecosystem Effect</h2>
+
 <p>These three tools create a flywheel. The registry makes servers discoverable. Interop makes skills portable. Non-dev workflows bring new users — and new users create demand for more servers, which the registry indexes, which interop makes portable.</p>
+
 <p>The developer-only phase of MCP was necessary. Someone had to build the foundation. But the next phase — where MCP becomes infrastructure that every team in an organization uses — requires these ecosystem layers.</p>
+
 <h2>When NOT to Use This</h2>
-<ul>
-<li><strong>Custom, specialized MCP servers:</strong> If you need deep integration with a proprietary system, build a dedicated server. The registry and interop layer help with general-purpose tools, not bespoke integrations.</li>
-<li><strong>Single AI user orgs:</strong> If one person uses AI and they're technical, the overhead of registry search and interop isn't worth it. Just find a server on GitHub and connect it.</li>
-<li><strong>Highly regulated environments:</strong> Non-dev workflow templates assume standard SaaS tool access. If your organization requires custom security review for every integration, the templates are a starting point, not a finished product.</li>
-</ul>
+
+<ul><li><strong>Custom, specialized MCP servers:</strong> If you need deep integration with a proprietary system, build a dedicated server. The registry and interop layer help with general-purpose tools, not bespoke integrations.</li><li><strong>Single AI user orgs:</strong> If one person uses AI and they're technical, the overhead of registry search and interop isn't worth it. Just find a server on GitHub and connect it.</li><li><strong>Highly regulated environments:</strong> Non-dev workflow templates assume standard SaaS tool access. If your organization requires custom security review for every integration, the templates are a starting point, not a finished product.</li></ul>
 <h2>What's Next</h2>
+
 <p>The MCP ecosystem is where npm was in 2012 — explosively growing, poorly organized, and full of potential. The tools that win will be the ones that lower the barrier from "developer who reads source code" to "ops manager who describes a workflow."</p>
+
 <p>That's what we're building toward.</p>
-<p><strong>The tools:</strong> <a href="https://github.com/phoenix-assistant/mcp-registry">mcp-registry</a> | <a href="https://github.com/phoenix-assistant/mcp-skills-interop">mcp-skills-interop</a> | <a href="https://github.com/phoenix-assistant/mcp-non-dev-workflows">mcp-non-dev-workflows</a></p>
-</body></html>
+
+<p><strong>The tools:</strong> [mcp-registry](https://github.com/phoenix-assistant/mcp-registry) | [mcp-skills-interop](https://github.com/phoenix-assistant/mcp-skills-interop) | [mcp-non-dev-workflows](https://github.com/phoenix-assistant/mcp-non-dev-workflows)</p>
+
+<p>---</p>
+
+<p><em>Tags: MCP, AI Tools, Developer Tools, Automation, Open Source</em></p>

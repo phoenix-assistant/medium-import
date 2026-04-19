@@ -1,41 +1,56 @@
-<html><head><meta charset="utf-8"><title>My AI API Started Lying to Me. It Took 3 Weeks to Notice.</title></head><body><h1>My AI API Started Lying to Me. It Took 3 Weeks to Notice.</h1>
 <p><em>Silent throttling, degraded responses, and single-provider risk — the AI reliability crisis nobody's measuring.</em></p>
+
 <p>Three weeks. That's how long my production app ran on degraded AI responses before I noticed. The API returned 200 OK every time. Latency looked normal. But the <em>quality</em> had quietly dropped — shorter responses, less reasoning, more hallucinations. My provider had silently throttled my tier, and nothing in my monitoring stack caught it.</p>
+
 <p>I call this <strong>The 200 OK Lie</strong> — the most dangerous failure mode in AI infrastructure. Your monitoring says "healthy." Your users say "this thing is broken."</p>
+
 <h2>The Three AI Reliability Failures</h2>
+
 <p>After months of building monitoring for AI infrastructure, I've identified three distinct failure modes that traditional observability misses. Traditional monitoring checks: is the API up? AI monitoring must check: is the API <em>good</em>?</p>
+
 <h3>1. Silent Throttling (The 200 OK Lie)</h3>
-<p><strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/ai-throttle-detector">ai-throttle-detector</a></p>
+<strong>Tool:</strong> [ai-throttle-detector](https://github.com/phoenix-assistant/ai-throttle-detector)
+
 <p>Providers can silently change: thinking tokens (reduce reasoning depth), model routing (send you a smaller model), response length caps, quality tiers. Your API returns 200 OK. Your monitoring says "healthy." Your users get garbage.</p>
+
 <p>The detector establishes baselines and alerts on quality drift, not just availability. It runs canary prompts with known-good expected outputs and compares response characteristics against your baseline window. When drift exceeds your threshold, you know before users complain.</p>
-<pre><code># What silent throttling looks like in your logs
+
+<p><em>[Code: # What silent throttling looks like in your logs
 # Week 1 baseline:
 #   avg_response_length: 847 tokens
 #   avg_reasoning_depth: 3.2 steps
 #   hallucination_rate: 2.1%
 
-# Week 3 (throttled, but you don't know):
+<p># Week 3 (throttled, but you don't know):
 #   avg_response_length: 312 tokens  # ↓ 63%
 #   avg_reasoning_depth: 1.1 steps   # ↓ 66%
 #   hallucination_rate: 14.7%        # ↑ 600%
-#   http_status: 200 OK              # ← "everything's fine"</code></pre>
+#   http_status: 200 OK              # ← "everything's fine"]</em></p></p>
+
 <h3>2. SLA Verification (Trust But Verify)</h3>
-<p><strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/ai-vendor-sla-monitor">ai-vendor-sla-monitor</a></p>
+<strong>Tool:</strong> [ai-vendor-sla-monitor](https://github.com/phoenix-assistant/ai-vendor-sla-monitor)
+
 <p>Your AI vendor promises 99.9% uptime. Are they delivering? Not just HTTP availability — actual functional uptime. Can the API handle your workload at the promised quality?</p>
+
 <h3>3. Supply Chain Resilience (The Single-Provider Trap)</h3>
-<p><strong>Tool:</strong> <a href="https://github.com/phoenix-assistant/ai-infra-resilience-monitor">ai-infra-resilience-monitor</a></p>
+<strong>Tool:</strong> [ai-infra-resilience-monitor](https://github.com/phoenix-assistant/ai-infra-resilience-monitor)
+
 <p>One GPU provider, one embedding API, one vector DB — what happens when any goes down? I call this <strong>The AI Supply Chain Matrix</strong> — mapping every dependency against availability, concentration, and geopolitical risk.</p>
+
 <p>Most teams don't realize their entire AI stack depends on one provider until that provider has an outage. The resilience monitor maps your actual dependency graph and scores concentration risk.</p>
+
 <h2>Bad vs Good: AI Monitoring</h2>
-<p><strong>❌ Traditional monitoring (what most teams have):</strong></p>
-<pre><code>health_check:
+
+<p><strong>❌ Traditional monitoring (what most teams have):</strong>
+<p><em>[Code: health_check:
   endpoint: https://api.openai.com/v1/chat/completions
   method: HEAD
   expected_status: 200
   interval: 60s
-  # Result: "API is up!" (while silently serving garbage)</code></pre>
-<p><strong>✅ AI-aware monitoring (what you actually need):</strong></p>
-<pre><code>ai_health_check:
+  # Result: "API is up!" (while silently serving garbage)]</em></p></p>
+
+<p><strong>✅ AI-aware monitoring (what you actually need):</strong>
+<p><em>[Code: ai_health_check:
   endpoint: https://api.openai.com/v1/chat/completions
   method: POST
   test_prompt: "Explain TCP handshake in exactly 3 steps"
@@ -45,44 +60,46 @@
     latency_p99: {max: 2000ms}
     model_match: "gpt-4"  # verify they didn't swap models
   baseline_drift: 15%
-  interval: 300s</code></pre>
+  interval: 300s]</em></p></p>
+
 <h2>The Copy-Paste Config</h2>
-<pre><code># ai-reliability.config.yaml
+
+<p><em>[Code: # ai-reliability.config.yaml
 monitoring:
   throttle_detection:
     baseline_window: 7d
     metrics: [response_length, reasoning_depth, latency_p99]
     alert_threshold: 15%  # deviation from baseline
-
+  
   sla_tracking:
     providers: [openai, anthropic, google]
     check_interval: 5m
     functional_test: true  # not just ping
-
+  
   supply_chain:
     risk_dimensions: [availability, concentration, geopolitical]
-    single_provider_alert: true</code></pre>
-<h2>The Reliability Scorecard</h2>
-<p>Rate your AI infrastructure honestly:</p>
-<pre><code>## AI Reliability Assessment
-- [ ] You monitor response QUALITY, not just status codes
-- [ ] You'd know within 1 hour if your provider silently throttled you
-- [ ] You verify SLA compliance with functional tests, not just pings
-- [ ] You have a failover provider configured and tested
-- [ ] You track token costs with alerting on anomalies
-- [ ] You know your single-provider concentration risk
+    single_provider_alert: true]</em></p>
 
+<h2>The Reliability Scorecard</h2>
+
+<p>Rate your AI infrastructure honestly:</p>
+
+<p><em>[Code: <h2>AI Reliability Assessment</h2>
+<ul><li>[ ] You monitor response QUALITY, not just status codes</li><li>[ ] You'd know within 1 hour if your provider silently throttled you</li><li>[ ] You verify SLA compliance with functional tests, not just pings</li><li>[ ] You have a failover provider configured and tested</li><li>[ ] You track token costs with alerting on anomalies</li><li>[ ] You know your single-provider concentration risk</li></ul>
 0-1 checked = You're flying blind
 2-3 checked = Basic coverage (add throttle detection)
-4-6 checked = Production-ready AI ops</code></pre>
+4-6 checked = Production-ready AI ops]</em></p>
+
 <h2>When NOT to Use This</h2>
-<ul>
-<li><strong>Hobby projects</strong> — if degraded responses don't cost money, monitoring overhead isn't worth it.</li>
-<li><strong>Fixed-model deployments</strong> — if you run local models with no external dependencies, supply chain monitoring doesn't apply.</li>
-<li><strong>Low-volume usage</strong> — if you make <100 API calls/day, statistical baselines won't be reliable enough for drift detection.</li>
-</ul>
+<ul><li><strong>Hobby projects</strong> — if degraded responses don't cost money, monitoring overhead isn't worth it.</li><li><strong>Fixed-model deployments</strong> — if you run local models with no external dependencies, supply chain monitoring doesn't apply.</li><li><strong>Low-volume usage</strong> — if you make <100 API calls/day, statistical baselines won't be reliable enough for drift detection.</li></ul>
 <h2>What's Next</h2>
+
 <p>The AI reliability space is evolving fast. The next problem to solve: <strong>multi-provider routing with quality-aware load balancing</strong>. Not just "failover when the API is down" but "route to the provider currently delivering the best quality for this specific task type."</p>
+
 <p>That requires real-time quality scoring across providers — which is exactly what the throttle detector's baselines enable.</p>
-<p><strong>The tools:</strong> <a href="https://github.com/phoenix-assistant/ai-throttle-detector">ai-throttle-detector</a> | <a href="https://github.com/phoenix-assistant/ai-vendor-sla-monitor">ai-vendor-sla-monitor</a> | <a href="https://github.com/phoenix-assistant/ai-infra-resilience-monitor">ai-infra-resilience-monitor</a></p>
-</body></html>
+
+<p><strong>The tools:</strong> [ai-throttle-detector](https://github.com/phoenix-assistant/ai-throttle-detector) | [ai-vendor-sla-monitor](https://github.com/phoenix-assistant/ai-vendor-sla-monitor) | [ai-infra-resilience-monitor](https://github.com/phoenix-assistant/ai-infra-resilience-monitor)</p>
+
+<p>---</p>
+
+<p><em>Tags: AI Infrastructure, Reliability, DevOps, Monitoring, SRE</em></p>

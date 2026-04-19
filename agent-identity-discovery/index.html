@@ -1,29 +1,44 @@
-<html><head><meta charset="utf-8"><title>Your AI Agents Can't Find Each Other. I Built DNS for Agents.</title></head><body><h1>Your AI Agents Can't Find Each Other. I Built DNS for Agents.</h1>
+<p>![Hero Image](../../images/agent-identity-discovery/hero.png)</p>
+
+<p># Your AI Agents Can't Find Each Other. I Built DNS for Agents.</p>
+
 <p><em>Two tools for the same unsolved problem: agent discovery and identity in multi-agent systems.</em></p>
+
 <h2>The Problem Nobody Talks About</h2>
+
 <p>Eight agents, three services, one critical workflow. Agent A needed to call Agent B to validate a code review. The connection? A hardcoded URL pointing to <code>localhost:4200</code>.</p>
+
 <p>When Agent B moved to port 4300 during a routine deploy, the pipeline silently failed. No error — just Agent A calling into the void, retrying five times, then giving up. The code review queue backed up for six hours before anyone noticed.</p>
+
 <p>Adding Agent C the following week meant updating configuration files in three separate repos. Agent D required four. The coupling grew linearly with every new agent, and every deploy became a coordination tax.</p>
+
 <p>This is the service discovery problem. Microservices solved it a decade ago with tools like Consul, etcd, and Kubernetes DNS. But the AI agent ecosystem has no equivalent. Agents discover each other through hardcoded endpoints, shared config files, or — worst of all — natural language instructions that say "call the code review agent at this URL."</p>
+
 <h2>Why Agent Identity Is Harder Than Service Discovery</h2>
+
 <p>Traditional service discovery assumes a controlled environment. Services register with a known orchestrator. The orchestrator manages health checks, routing, and deregistration.</p>
+
 <p>Agent systems break these assumptions in three ways:</p>
-<ol>
-<li><strong>Agents are autonomous.</strong> They spin up, shut down, and migrate without central coordination. A service mesh assumes stable topology. Agents assume nothing.</li>
-</ol>
-<ol>
-<li><strong>Capabilities matter more than endpoints.</strong> When Agent A needs "someone who can review Python code," it shouldn't care whether that's Agent B on port 4200 or Agent F on a different machine entirely. Discovery should be capability-based, not address-based.</li>
-</ol>
-<ol>
-<li><strong>Trust is unverified.</strong> When Agent B responds, how does Agent A know it's actually Agent B? In most current setups, it doesn't. It trusts the response because it came from the expected URL — the same security model as 1990s email.</li>
-</ol>
+
+<p>1. <strong>Agents are autonomous.</strong> They spin up, shut down, and migrate without central coordination. A service mesh assumes stable topology. Agents assume nothing.</p>
+
+<p>2. <strong>Capabilities matter more than endpoints.</strong> When Agent A needs "someone who can review Python code," it shouldn't care whether that's Agent B on port 4200 or Agent F on a different machine entirely. Discovery should be capability-based, not address-based.</p>
+
+<p>3. <strong>Trust is unverified.</strong> When Agent B responds, how does Agent A know it's actually Agent B? In most current setups, it doesn't. It trusts the response because it came from the expected URL — the same security model as 1990s email.</p>
+
 <p>MIT's 2026 agent infrastructure report called identity "the most underbuilt layer in the multi-agent ecosystem." They're right. We're building increasingly sophisticated agent networks on a foundation of implicit trust and brittle addressing.</p>
+
 <h2>What I Built: DNS for Agents</h2>
+
 <p>I built two open-source tools that work together like DNS works for the internet.</p>
-<p><strong><a href="https://github.com/phoenix-assistant/agent-identity-registry">agent-identity-registry</a></strong> handles identity. Every agent gets a decentralized identifier (DID) — a cryptographically verifiable identity that doesn't depend on a central authority. The registry stores capabilities, trust chains, and verification keys.</p>
-<p><strong><a href="https://github.com/phoenix-assistant/agent-dns-registry">agent-dns-registry</a></strong> handles discovery. Agents register their capabilities ("I can review Python," "I can run security scans"), and other agents query by capability rather than address. The registry resolves capability queries to the right agent, checking health and trust before returning a result.</p>
+
+<p><strong>[agent-identity-registry](https://github.com/phoenix-assistant/agent-identity-registry)</strong> handles identity. Every agent gets a decentralized identifier (DID) — a cryptographically verifiable identity that doesn't depend on a central authority. The registry stores capabilities, trust chains, and verification keys.</p>
+
+<p><strong>[agent-dns-registry](https://github.com/phoenix-assistant/agent-dns-registry)</strong> handles discovery. Agents register their capabilities ("I can review Python," "I can run security scans"), and other agents query by capability rather than address. The registry resolves capability queries to the right agent, checking health and trust before returning a result.</p>
+
 <p>Together, they form a complete agent addressing system:</p>
-<pre><code># Register an agent with capabilities
+
+<p><em>[Code: # Register an agent with capabilities
 curl -X POST http://localhost:3900/register \
   -H "Content-Type: application/json" \
   -d '{
@@ -34,55 +49,60 @@ curl -X POST http://localhost:3900/register \
     "publicKey": "..."
   }'
 
-# Discover by capability (not by address)
+<p># Discover by capability (not by address)
 curl http://localhost:3900/discover?capability=python-review
-# Returns: verified agent endpoint + trust chain</code></pre>
+# Returns: verified agent endpoint + trust chain]</em></p></p>
+
 <h3>Bad vs. Good: Agent Communication</h3>
-<p><strong>Without identity registry:</strong></p>
-<pre><code># config.yaml — hardcoded, brittle, unverified
+
+<p><strong>Without identity registry:</strong>
+<p><em>[Code: # config.yaml — hardcoded, brittle, unverified
 agents:
   code_reviewer: http://localhost:4200
   security_scanner: http://localhost:4300
   test_runner: http://localhost:4400
   # Move any port → everything breaks
-  # No verification that responses are authentic</code></pre>
-<p><strong>With identity registry:</strong></p>
-<pre><code># config.yaml — capability-based, verified
+  # No verification that responses are authentic]</em></p></p>
+
+<p><strong>With identity registry:</strong>
+<p><em>[Code: # config.yaml — capability-based, verified
 discovery:
   registry: http://localhost:3900
   require_verification: true
   # Agents discovered by capability
   # Trust chains verified automatically
-  # Health-aware routing built in</code></pre>
+  # Health-aware routing built in]</em></p></p>
+
 <h2>The Trust Chain Model</h2>
+
 <p>The identity system uses a three-tier trust model:</p>
-<ol>
-<li><strong>Root of Trust</strong> — your organization's signing key. You control who can register.</li>
-<li><strong>Agent Identity</strong> — each agent holds a DID signed by the root. Verifiable without calling home.</li>
-<li><strong>Capability Attestation</strong> — capabilities are signed claims, not self-reported labels. An agent says "I can review Python" only if its attestation chain validates.</li>
-</ol>
+
+<p>1. <strong>Root of Trust</strong> — your organization's signing key. You control who can register.
+2. <strong>Agent Identity</strong> — each agent holds a DID signed by the root. Verifiable without calling home.
+3. <strong>Capability Attestation</strong> — capabilities are signed claims, not self-reported labels. An agent says "I can review Python" only if its attestation chain validates.</p>
+
 <p>This plugs into existing infrastructure. If you already use OAuth or mTLS, the registry integrates as an additional verification layer rather than replacing your auth stack.</p>
+
 <h2>The Implementation Checklist</h2>
+
 <p>Copy this to evaluate whether your multi-agent system needs an identity layer:</p>
-<ul>
-<li>[ ] More than 3 agents communicating with each other</li>
-<li>[ ] Agents deployed across multiple machines or containers</li>
-<li>[ ] Agent endpoints change during deploys or scaling</li>
-<li>[ ] No verification that agent responses are authentic</li>
-<li>[ ] Adding a new agent requires config changes in multiple places</li>
-<li>[ ] Agent failures cascade because of hardcoded dependencies</li>
-</ul>
-<p>If you checked three or more, you have a discovery problem. If you checked the trust items, you also have an identity problem.</p>
+
+<ul><li>[ ] More than 3 agents communicating with each other</li><li>[ ] Agents deployed across multiple machines or containers</li><li>[ ] Agent endpoints change during deploys or scaling</li><li>[ ] No verification that agent responses are authentic</li><li>[ ] Adding a new agent requires config changes in multiple places</li><li>[ ] Agent failures cascade because of hardcoded dependencies</li></ul>
+If you checked three or more, you have a discovery problem. If you checked the trust items, you also have an identity problem.
+
 <h2>When NOT to Use This</h2>
-<ul>
-<li><strong>Single-agent systems.</strong> If you have one agent doing everything, you don't need discovery.</li>
-<li><strong>Fully trusted internal networks.</strong> If all agents run on one machine behind a firewall and you control all code, the trust layer adds overhead without proportional benefit.</li>
-<li><strong>Research prototypes.</strong> If you're experimenting and endpoints don't change, hardcoded URLs are fine. Identity infrastructure is for production multi-agent deployments.</li>
-<li><strong>Latency-critical hot paths.</strong> The registry adds a lookup hop. For sub-millisecond requirements, direct connections with cached resolution may be necessary.</li>
-</ul>
+
+<ul><li><strong>Single-agent systems.</strong> If you have one agent doing everything, you don't need discovery.</li><li><strong>Fully trusted internal networks.</strong> If all agents run on one machine behind a firewall and you control all code, the trust layer adds overhead without proportional benefit.</li><li><strong>Research prototypes.</strong> If you're experimenting and endpoints don't change, hardcoded URLs are fine. Identity infrastructure is for production multi-agent deployments.</li><li><strong>Latency-critical hot paths.</strong> The registry adds a lookup hop. For sub-millisecond requirements, direct connections with cached resolution may be necessary.</li></ul>
 <h2>The Bigger Picture</h2>
+
 <p>The agent ecosystem is replaying the history of distributed systems, roughly fifteen years behind. We went through the same evolution with microservices: hardcoded URLs → service registries → service meshes → zero-trust networking.</p>
+
 <p>Agent systems will follow the same path. The question is whether the ecosystem builds shared infrastructure or every team reinvents discovery and identity from scratch.</p>
+
 <p>These tools are a starting point. They solve the immediate problem — agents finding each other reliably and verifying identity — without requiring a complete platform migration.</p>
-<p><strong>The tools:</strong> <a href="https://github.com/phoenix-assistant/agent-identity-registry">agent-identity-registry</a> | <a href="https://github.com/phoenix-assistant/agent-dns-registry">agent-dns-registry</a></p>
-</body></html>
+
+<p><strong>The tools:</strong> [agent-identity-registry](https://github.com/phoenix-assistant/agent-identity-registry) | [agent-dns-registry](https://github.com/phoenix-assistant/agent-dns-registry)</p>
+
+<p>---</p>
+
+<p><em>Tags: AI Agents, Multi-Agent Systems, Service Discovery, Infrastructure, Open Source</em></p>

@@ -1,22 +1,35 @@
-<html><head><meta charset="utf-8"><title>I Tracked 12 AI Companies for 6 Months. Their Safety Promises Keep Disappearing.</title></head><body><h1>I Tracked 12 AI Companies for 6 Months. Their Safety Promises Keep Disappearing.</h1>
+<p>![Hero Image](../../images/ai-accountability-suite/hero.png)</p>
+
+<p># I Tracked 12 AI Companies for 6 Months. Their Safety Promises Keep Disappearing.</p>
+
 <p><em>I built four tools to hold AI companies accountable. Here's what I found.</em></p>
+
 <p>In May 2024, I watched OpenAI's superalignment team implode in real-time on Twitter. Jan Leike quit. Ilya left. Others followed. By the time the news cycle moved on, I had a nagging question: who's actually <em>left</em> working on safety at the major labs?</p>
+
 <p>Nobody could answer that. Not with data.</p>
+
 <p>So I started tracking. What began as a spreadsheet became an obsession, which became four open-source tools. Six months later, I have data on 12 AI companies across four accountability dimensions — and the picture is worse than I expected.</p>
+
 <h2>The Accountability Gap</h2>
+
 <p>I call this <strong>The Accountability Gap</strong> — the distance between what AI companies promise and what they actually do, measured across four dimensions:</p>
-<ol>
-<li><strong>Personnel</strong> — Who's working on safety? Are teams growing or shrinking?</li>
-<li><strong>Policy</strong> — What did they commit to? Has it changed?</li>
-<li><strong>Compliance</strong> — Do their systems meet regulatory requirements?</li>
-<li><strong>Disclosure</strong> — When they go public, what do they actually reveal?</li>
-</ol>
+
+<p>1. <strong>Personnel</strong> — Who's working on safety? Are teams growing or shrinking?
+2. <strong>Policy</strong> — What did they commit to? Has it changed?
+3. <strong>Compliance</strong> — Do their systems meet regulatory requirements?
+4. <strong>Disclosure</strong> — When they go public, what do they actually reveal?</p>
+
 <p>Most coverage focuses on one dimension at a time. A news story about a researcher leaving. A blog post about a policy update. An IPO filing that says nothing. Individually, these are data points. Together, they're a pattern.</p>
+
 <h2>Dimension 1: Personnel Tracking (PULSE)</h2>
-<p><strong>The tool:</strong> <a href="https://github.com/phoenix-assistant/ai-governance-tracker">ai-governance-tracker</a></p>
+
+<p><strong>The tool:</strong> [ai-governance-tracker](https://github.com/phoenix-assistant/ai-governance-tracker)</p>
+
 <p><strong>The pattern:</strong> PULSE — <strong>P</strong>ersonnel tracking, <strong>U</strong>pdate feeds, <strong>L</strong>ab comparisons, <strong>S</strong>afety metrics, <strong>E</strong>vent timeline.</p>
+
 <p>I track safety team composition, researcher movements, compute allocation, and published research across major labs. The data tells a clear story: safety teams are losing senior researchers faster than they're being replaced, and the replacements are more junior.</p>
-<pre><code># governance-tracker.config.yaml
+
+<p><em>[Code: # governance-tracker.config.yaml
 labs:
   - name: "OpenAI"
     track:
@@ -26,18 +39,24 @@ labs:
     sources:
       - linkedin_company_page
       - arxiv_affiliations
-      - public_statements</code></pre>
+      - public_statements]</em></p>
+
 <h2>Dimension 2: Policy Drift Detection (DRIFT)</h2>
-<p><strong>The tool:</strong> <a href="https://github.com/phoenix-assistant/policy-commitment-tracker">policy-commitment-tracker</a></p>
+
+<p><strong>The tool:</strong> [policy-commitment-tracker](https://github.com/phoenix-assistant/policy-commitment-tracker)</p>
+
 <p><strong>The pattern:</strong> DRIFT — <strong>D</strong>ocument commitments, <strong>R</strong>ecord snapshots, <strong>I</strong>dentify changes, <strong>F</strong>lag regressions, <strong>T</strong>rack over time.</p>
+
 <p>This one scares me the most. I've caught multiple instances where companies quietly softened safety commitments. A "we will never" becomes "we generally don't." A concrete timeline becomes "when appropriate." Nobody notices because nobody's diffing the policy pages.</p>
-<p><strong>❌ How we used to track policy:</strong></p>
-<pre><code>Step 1: Read blog post about safety commitment
+
+<p><strong>❌ How we used to track policy:</strong>
+<p><em>[Code: Step 1: Read blog post about safety commitment
 Step 2: Feel reassured
 Step 3: Forget about it
-Step 4: Six months later, commitment is gone</code></pre>
-<p><strong>✅ DRIFT approach:</strong></p>
-<pre><code>organizations:
+Step 4: Six months later, commitment is gone]</em></p></p>
+
+<p><strong>✅ DRIFT approach:</strong>
+<p><em>[Code: organizations:
   - name: "OpenAI"
     pages:
       - url: "https://openai.com/safety"
@@ -45,31 +64,37 @@ Step 4: Six months later, commitment is gone</code></pre>
     alerts:
       - type: commitment_removed
       - type: language_softened
-      - type: timeline_extended</code></pre>
+      - type: timeline_extended]</em></p></p>
+
 <h2>Dimension 3: Automated Compliance (R.A.C.E.)</h2>
-<p><strong>The tool:</strong> <a href="https://github.com/phoenix-assistant/compliance-verification">compliance-verification</a></p>
+
+<p><strong>The tool:</strong> [compliance-verification](https://github.com/phoenix-assistant/compliance-verification)</p>
+
 <p><strong>The pattern:</strong> R.A.C.E. — <strong>R</strong>egulation mapping, <strong>A</strong>utomated evidence collection, <strong>C</strong>ontinuous checking, <strong>E</strong>xportable reports.</p>
+
 <p>I spent 3 weeks manually checking EU AI Act compliance for one system. Then automated it in 3 hours. Compliance verification runs in CI/CD — every PR gets a compliance diff, every deployment gets a compliance gate.</p>
+
 <h2>Dimension 4: IPO Disclosure Scoring (The Opacity Tax)</h2>
-<p><strong>The tool:</strong> <a href="https://github.com/phoenix-assistant/ai-ipo-transparency-tracker">ai-ipo-transparency-tracker</a></p>
+
+<p><strong>The tool:</strong> [ai-ipo-transparency-tracker](https://github.com/phoenix-assistant/ai-ipo-transparency-tracker)</p>
+
 <p><strong>The finding:</strong> I read 12 AI company S-1 filings. Most said nothing meaningful about safety. Twelve of fourteen "safety" mentions in one filing were boilerplate. I call this <strong>The Opacity Tax</strong> — the hidden cost investors pay when AI companies substitute vague language for actual disclosure.</p>
+
 <h2>The Copy-Paste Artifact: Your AI Accountability Checklist</h2>
+
 <p>Before investing in, partnering with, or deploying any AI system, check these:</p>
-<pre><code>## AI Accountability Quick Check
-- [ ] Safety team: growing or shrinking? (governance-tracker)
-- [ ] Key researchers: still there? (LinkedIn/arxiv cross-ref)
-- [ ] Policy commitments: same as 6 months ago? (policy-tracker diff)
-- [ ] Compliance claims: verified or vibes? (compliance-verification)
-- [ ] If public: real disclosure or safety theater? (IPO transparency score)
-- [ ] Compute allocation: what % goes to safety research?
-- [ ] Red teaming: published methodology or "trust us"?</code></pre>
+
+<p><em>[Code: <h2>AI Accountability Quick Check</h2>
+<ul><li>[ ] Safety team: growing or shrinking? (governance-tracker)</li><li>[ ] Key researchers: still there? (LinkedIn/arxiv cross-ref)</li><li>[ ] Policy commitments: same as 6 months ago? (policy-tracker diff)</li><li>[ ] Compliance claims: verified or vibes? (compliance-verification)</li><li>[ ] If public: real disclosure or safety theater? (IPO transparency score)</li><li>[ ] Compute allocation: what % goes to safety research?</li><li>[ ] Red teaming: published methodology or "trust us"?]</em></p></li></ul>
 <h2>When This Does NOT Apply</h2>
-<ul>
-<li><strong>Open-source models with no corporate entity</strong> — governance tracking requires an organization to track. Community models have different accountability mechanisms.</li>
-<li><strong>Internal-only tools with no external users</strong> — compliance requirements scale with risk. An internal productivity tool has different obligations than a customer-facing AI.</li>
-<li><strong>Research prototypes</strong> — holding research to production compliance standards kills innovation. Apply this to shipped products.</li>
-</ul>
+
+<ul><li><strong>Open-source models with no corporate entity</strong> — governance tracking requires an organization to track. Community models have different accountability mechanisms.</li><li><strong>Internal-only tools with no external users</strong> — compliance requirements scale with risk. An internal productivity tool has different obligations than a customer-facing AI.</li><li><strong>Research prototypes</strong> — holding research to production compliance standards kills innovation. Apply this to shipped products.</li></ul>
 <h2>What's Next</h2>
+
 <p>I'm working on a unified dashboard that combines all four dimensions into a single accountability score per company. Think of it as a credit rating for AI safety — based on data, not press releases.</p>
-<p><strong>The tools:</strong> <a href="https://github.com/phoenix-assistant/ai-governance-tracker">ai-governance-tracker</a> | <a href="https://github.com/phoenix-assistant/policy-commitment-tracker">policy-commitment-tracker</a> | <a href="https://github.com/phoenix-assistant/compliance-verification">compliance-verification</a> | <a href="https://github.com/phoenix-assistant/ai-ipo-transparency-tracker">ai-ipo-transparency-tracker</a></p>
-</body></html>
+
+<p><strong>The tools:</strong> [ai-governance-tracker](https://github.com/phoenix-assistant/ai-governance-tracker) | [policy-commitment-tracker](https://github.com/phoenix-assistant/policy-commitment-tracker) | [compliance-verification](https://github.com/phoenix-assistant/compliance-verification) | [ai-ipo-transparency-tracker](https://github.com/phoenix-assistant/ai-ipo-transparency-tracker)</p>
+
+<p>---</p>
+
+<p><em>Tags: AI Safety, Governance, Compliance, Open Source, Accountability</em></p>
